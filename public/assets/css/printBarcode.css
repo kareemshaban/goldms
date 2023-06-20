@@ -1,0 +1,22 @@
+@page {
+    size:76mm 13mm ;
+
+    margin: 0;
+}
+
+html {
+    /* off-white, so body edge is visible in browser */
+    size:76mm 13mm ;
+
+    margin: 0;
+    background: #eee;
+}
+
+body {
+    /* A5 dimensions */
+    width: 76mm;
+    height: 13mm;
+    margin: 0;
+}
+
+/* fill half the height with each face */
