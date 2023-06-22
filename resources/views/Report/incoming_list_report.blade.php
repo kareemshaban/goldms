@@ -23,6 +23,7 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
 
 </head>
 
@@ -65,7 +66,7 @@
                             </div>
                             <div class="table-responsive">
 
-                                <table  class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table  class="table table-bordered"  width="100%" cellspacing="0">
                                     <thead>
                                     <tr>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2" colspan="4" style="text-align: right !important;">{{__('main.account_name')}}</th>
@@ -101,6 +102,7 @@
                                                 </tr>
                                             @endif
                                             @foreach($child ->childs as $subChild)
+                                                @if( is_array($child -> childs))
                                                 @if(count($subChild -> childs) == 0)
                                                 <tr>
                                                 <td class="text-center">{{$subChild->name}}</td>
@@ -127,7 +129,13 @@
 
 
                                                 @endforeach
+                                                @else
+                                                    <tr>
+                                                        <td class="text-center" colspan="4" style="text-align: right !important;">{{ '--- ' . $subChild->name}}</td>
 
+                                                    </tr>
+
+                                                @endif
 
                                             @endforeach
 

@@ -77,6 +77,22 @@
                                 </div>
 
                                 <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>من رقم فاتورة <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                            <input type="text" id="FromBillNumber" name="FromBillNumber"  class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>إلي رقم فاتورة <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                            <input type="text" id="ToBillNumber" name="ToBillNumber"  class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
                                     <div class="col-6" style="display: block; margin: 20px auto; text-align: center;">
                                         <button type="submit" class="btn btn-labeled btn-primary"  >
                                             {{__('main.search_btn')}}</button>

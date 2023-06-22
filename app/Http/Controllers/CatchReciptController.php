@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AccountsTree;
 use App\Models\CatchRecipt;
 use App\Models\ExpenseType;
 use Carbon\Carbon;
@@ -32,14 +33,18 @@ class CatchReciptController extends Controller
         foreach ($roles as $role){
             array_push($routes , $role -> route);
         }
+
+
+
         $bills = DB::table('catch_recipts')
-            -> join('expense_types' , 'expense_types.id' , '=' , 'catch_recipts.type_id')
-            -> select('catch_recipts.*' , 'expense_types.name_ar' , 'expense_types.name_en')
+            -> join('accounts_trees as from_account' , 'from_account.id' , '=' , 'catch_recipts.from_account')
+            -> join('accounts_trees as to_account' , 'to_account.id' , '=' , 'catch_recipts.to_account')
+            -> select('catch_recipts.*'  , 'from_account.name as from_account_name' , 'to_account.name as to_account_name')
             -> get();
 
-        $types = ExpenseType::all();
+        $accounts = AccountsTree::all();
 
-        return view('catchs.index' , compact('routes' , 'bills' , 'types'));
+        return view('catchs.index' , compact('routes' , 'bills' , 'accounts'));
     }
 
     /**
@@ -64,13 +69,14 @@ class CatchReciptController extends Controller
             'date' => 'required',
             'docNumber' => 'required',
             'amount' => 'required',
-            'type_id' => 'required'
+            'from_account' => 'required',
+            'to_account' => 'required',
         ]);
 
-
-
         $id =  CatchRecipt::create([
-            'type_id' => $request -> type_id,
+            'from_account' => $request -> from_account,
+            'to_account' => $request -> to_account,
+            'client' => $request -> client ?? '',
             'amount' => $request -> amount,
             'notes' => $request -> notes ?? '',
             'date' => Carbon::parse($request -> date) ,

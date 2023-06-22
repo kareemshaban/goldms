@@ -21,7 +21,7 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
-
+    <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
 </head>
 
 <body id="page-top" @if(Config::get('app.locale') == 'ar') style="direction: rtl" @endif>
@@ -63,7 +63,7 @@
                         <div class="card-body">
 
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered"  width="100%" cellspacing="0">
                                     <thead>
 
                                     <tr>
@@ -166,7 +166,7 @@
 
                                  <h2 class="text-center" style="margin: 20px;">{{__('main.movements_net')}}</h2>
 
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered"  width="100%" cellspacing="0">
                                     <thead>
                                     <tr>
                                         <th  class="text-center btn-warning" colspan="{{count($karats) }}">{{__('main.new_gold')}}</th>

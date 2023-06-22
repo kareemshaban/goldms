@@ -20,6 +20,8 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
+
 
 </head>
 
@@ -66,7 +68,6 @@
                                         </th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.code')}}</th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.name_ar')}}</th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.name_en')}} </th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.category')}} </th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.karat')}} </th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.weight')}} </th>
@@ -86,7 +87,6 @@
                                             <td class="text-center">{{$loop -> index + 1}}</td>
                                             <td class="text-center">{{$item -> code}}</td>
                                             <td class="text-center">{{$item -> name_ar}}</td>
-                                            <td class="text-center">{{$item -> name_en}}</td>
                                             <td class="text-center">{{Config::get('app.locale') == 'ar' ? $item -> category -> name_ar : $item -> category -> name_en }}</td>
                                             <td class="text-center">{{ $item -> karat ? (Config::get('app.locale') == 'ar' ? $item -> karat -> name_ar : $item -> karat -> name_en) : '' }}</td>
                                             <td class="text-center">{{$item -> weight}}</td>

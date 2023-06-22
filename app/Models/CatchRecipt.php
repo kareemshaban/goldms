@@ -10,7 +10,9 @@ class CatchRecipt extends Model
     use HasFactory;
     protected $fillable = [
         'id',
-        'type_id',
+        'from_account',
+        'to_account',
+        'client',
         'amount',
         'notes',
         'date',

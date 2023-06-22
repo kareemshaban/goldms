@@ -1232,7 +1232,7 @@
 
         $.ajax({
             type: 'get',
-            url: '/get_sales_pos_no/' + type,
+            url: 'get_sales_pos_no/' + type,
             dataType: 'json',
 
             success: function (response) {
@@ -1247,7 +1247,7 @@
         });
         $.ajax({
             type: 'get',
-            url: '/get_purchase_pos_no',
+            url: 'get_purchase_pos_no',
             dataType: 'json',
 
             success: function (response) {

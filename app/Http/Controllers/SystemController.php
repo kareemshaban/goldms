@@ -1398,18 +1398,18 @@ class SystemController extends Controller
 
             $detailsData = [];
 
-            $expenseTypeAccount = ExpenseType::find($bill->type_id)->account_id;
-
+            $from_account = AccountsTree::find($bill->from_account)->id;
+            $to_account = AccountsTree::find($bill->to_account)->id;
 
             $detailsData[] = [
-                'account_id' => $settings->safe_account,
+                'account_id' => $from_account,
                 'debit' =>  0,
                 'credit' => $bill -> amount,
                 'ledger_id' => 0,
                 'notes' => ''
             ];
             $detailsData[] = [
-                'account_id' => $expenseTypeAccount,
+                'account_id' => $to_account,
                 'debit' => $bill -> amount,
                 'credit' => 0,
                 'ledger_id' => 0,
@@ -1440,18 +1440,18 @@ class SystemController extends Controller
 
             $detailsData = [];
 
-            $expenseTypeAccount = ExpenseType::find($bill->type_id)->account_id;
-
+            $from_account = AccountsTree::find($bill->from_account)->id;
+            $to_account = AccountsTree::find($bill->to_account)->id;
 
             $detailsData[] = [
-                'account_id' => $settings->safe_account,
+                'account_id' => $from_account,
                 'credit' =>  0,
                 'debit' => $bill -> amount,
                 'ledger_id' => 0,
                 'notes' => ''
             ];
             $detailsData[] = [
-                'account_id' => $expenseTypeAccount,
+                'account_id' => $to_account,
                 'credit' => $bill -> amount,
                 'debit' => 0,
                 'ledger_id' => 0,

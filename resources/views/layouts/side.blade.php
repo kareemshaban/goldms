@@ -539,8 +539,8 @@
                 <a class="collapse-item @if($subSlag == 201) active @endif"
                    href="{{route('expenses')}}">{{__('main.expenses_list')}}</a>
 
-                <a class="collapse-item @if($subSlag == 202) active @endif"
-                   href="{{route('expenses_type' , 0)}}">{{__('main.expenses_type')}}</a>
+{{--                <a class="collapse-item @if($subSlag == 202) active @endif"--}}
+{{--                   href="{{route('expenses_type' , 0)}}">{{__('main.expenses_type')}}</a>--}}
 
 
 
@@ -564,8 +564,8 @@
                 <a class="collapse-item @if($subSlag == 211) active @endif"
                    href="{{route('catches')}}">{{__('main.catches_list')}}</a>
 
-                <a class="collapse-item @if($subSlag == 212) active @endif"
-                   href="{{route('expenses_type' , 1)}}">{{__('main.catches_type')}}</a>
+{{--                <a class="collapse-item @if($subSlag == 212) active @endif"--}}
+{{--                   href="{{route('expenses_type' , 1)}}">{{__('main.catches_type')}}</a>--}}
 
 
 

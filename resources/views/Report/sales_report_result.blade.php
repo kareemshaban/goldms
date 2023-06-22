@@ -20,6 +20,9 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
+
+
 
 
 </head>
@@ -59,7 +62,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered"  width="100%" cellspacing="0">
                                     <thead>
                                     <tr>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">
@@ -72,11 +75,9 @@
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.weight')}} </th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.price_gram')}}</th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.total_without_tax')}} </th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.gram_tax')}} </th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.made_Value')}} </th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.discount')}} </th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.net_money')}} </th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.net_after_discount')}} </th>
+                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.tax')}} </th>
+                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.total_with_tax')}} </th>
+
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -95,12 +96,9 @@
                                             <td class="text-center">{{ (Config::get('app.locale') == 'ar' ? $item -> karat_name_ar : $item -> karat_name_en)  }}</td>
                                             <td class="text-center">{{$item -> weight}}</td>
                                             <td class="text-center">{{$item -> gram_price}}</td>
-                                            <td class="text-center">{{$item -> weight * $item -> gram_price}}</td>
+                                            <td class="text-center">{{ $item -> weight * $item -> gram_price   }}</td>
                                             <td class="text-center">{{$item -> gram_tax}}</td>
-                                            <td class="text-center">{{$item -> gram_manufacture}}</td>
-                                            <td class="text-center">{{$item -> discount}}</td>
                                             <td class="text-center">{{$item -> net_money}}</td>
-                                            <td class="text-center">{{$item -> net_money - $item -> discount}}</td>
 
                                         </tr>
                                         <?php $sum_weight += $item -> weight ?>
@@ -108,7 +106,6 @@
                                         <?php $sum_tax += $item -> gram_tax ?>
                                         <?php $sum_made += $item -> gram_manufacture ?>
                                         <?php $sum_net += $item -> net_money ?>
-                                        <?php $sum_discount += $item -> discount ?>
 
                                     @endforeach
                                     <tr style="background: antiquewhite; font-weight: bold">
@@ -121,11 +118,8 @@
                                         <td class="text-center"></td>
                                         <td class="text-center">{{$sum_total}}</td>
                                         <td class="text-center">{{$sum_tax}}</td>
-                                        <td class="text-center">{{$sum_made}}</td>
-                                        <td class="text-center">{{$sum_discount}}</td>
 
                                         <td class="text-center">{{$sum_net}}</td>
-                                        <td class="text-center">{{$sum_net - $sum_discount}}</td>
                                     </tr>
                                     </tbody>
 

@@ -157,6 +157,7 @@ return [
     'view_payments' => 'View Payments',
     'add_payment' => 'Add Payment',
     'from' => 'From',
+    'to' => 'إلي حساب',
     'additional_service' => 'Additional Service',
     'sales' => 'Sales',
     'sales_list' => 'Sales List',

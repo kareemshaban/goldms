@@ -21,7 +21,7 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
-
+    <link href="{{asset('assets/css/printA4Portrait.css')}}" rel="stylesheet">
 </head>
 
 <body id="page-top" @if(Config::get('app.locale') == 'ar') style="direction: rtl" @endif>

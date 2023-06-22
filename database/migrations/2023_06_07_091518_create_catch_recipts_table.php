@@ -15,9 +15,13 @@ class CreateCatchReciptsTable extends Migration
     {
         Schema::create('catch_recipts', function (Blueprint $table) {
             $table->id();
-            $table -> integer('type_id');
+            $table -> integer('from_account');
+            $table -> integer('to_account');
+            $table -> string('client');
             $table -> decimal('amount');
             $table -> text('notes');
+            $table -> date('date');
+            $table -> string('docNumber');
             $table->timestamps();
         });
     }

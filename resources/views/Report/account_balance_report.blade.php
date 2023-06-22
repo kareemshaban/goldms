@@ -21,6 +21,7 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
 
 </head>
 
@@ -47,19 +48,22 @@
             <div class="container-fluid">
                 @include('flash-message')
                 <div class="d-sm-flex align-items-center justify-content-between mb-4" style="padding: 8px">
-                    <h1 class="h3 mb-0 text-primary-800">{{__('main.accounting')}} / {{__('main.balance_report')}}</h1>
+                    <h1 class="h3 mb-0 text-primary-800 no-print">{{__('main.accounting')}} / {{__('main.balance_report')}}</h1>
+                    <button type="button" class="btn btn-info no-print" id="btnPrint">Print</button>
                 </div>
 
                 <div class="card-body px-0 pt-0 pb-2">
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">{{__('main.balance_report')}}</h6>
+                            <h4 class="m-0 font-weight-bold text-primary text-center">{{__('main.balance_report')}}</h4>
+                            <br>
+                            <h3 class="text-center">  {{Config::get('app.locale') == 'ar' ? $period_ar : $period}} </h3>
                         </div>
 
                         <div class="card-body">
                             <div class="table-responsive p-0">
-                                <table  class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table  class="table table-bordered" width="100%" cellspacing="0">
                                     <thead>
                                     <tr>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2" rowspan="2">{{__('main.account_name')}}</th>
@@ -162,21 +166,15 @@
 </div>
 
 <script type="text/javascript">
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
+    $(document).ready(function () {
+        $(document).on('click', '#btnPrint', function (event) {
+            window.print();
 
-            reader.onload = function (e) {
-                $('#profile-img-tag').attr('src', e.target.result);
+        });
 
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    $("#image_url").change(function () {
-        readURL(this);
     });
+
+
 </script>
 
 <script type="text/javascript">

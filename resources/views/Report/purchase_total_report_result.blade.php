@@ -20,6 +20,7 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
 
 
 </head>

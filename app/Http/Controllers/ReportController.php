@@ -183,7 +183,9 @@ class ReportController extends Controller
         return view('Report.sales_report' , compact('routes'))  ;
     }
     public function sales_report_search(Request $request){
-       $data = DB::table('exit_work_details')
+
+
+        $data = DB::table('exit_work_details')
            -> join('exit_works' , 'exit_work_details.bill_id' , '=' , 'exit_works.id')
            ->join('items' , 'exit_work_details.item_id' , '=' , 'items.id')
            ->join('karats' , 'exit_work_details.karat_id' , '=' , 'karats.id')
@@ -208,16 +210,57 @@ class ReportController extends Controller
         if($request -> has('isStartDate')) $data2 = $data2 -> where('date' , '>=' , Carbon::parse($request -> StartDate) );
         if($request -> has('isEndDate'))   $data2 = $data2 -> where('date' , '<=' , Carbon::parse($request -> EndDate) -> addDay());
 
+        if($request ->FromBillNumber ) {
+            $fromBill = substr($request -> FromBillNumber , 5  );
+            $prefix = substr($request -> FromBillNumber , 0 , 5 );
+            if($prefix  == 'SWSI-'){
+                $bil = ExitWork::where('bill_number' , '=' , $request -> FromBillNumber) -> first();
+                if($bil){
+                    $data2 = [];
+                    $data = $data -> where('exit_works.id' , '>=' , $bil -> id );
+                }
 
+            }
+            else{
+                $bil = ExitOld::where('bill_number' , '=' , $request -> FromBillNumber) -> first();
+                if($bil){
+                    $data= [];
+                    $data2 = $data -> where('exit_olds.id' , '>=' , $bil -> id );
+                }
+
+            }
+        }
+
+        if($request ->ToBillNumber ) {
+            $fromBill = substr($request -> ToBillNumber , 5  );
+            $prefix = substr($request -> ToBillNumber , 0 , 5 );
+            if($prefix  == 'SWSI-'){
+                $bil = ExitWork::where('bill_number' , '=' , $request -> ToBillNumber) -> first();
+                if($bil){
+                    $data2 = [];
+                    $data = $data -> where('exit_works.id' , '<=' , $bil -> id );
+
+                }
+
+            }
+            else{
+                $bil = ExitOld::where('bill_number' , '=' , $request -> ToBillNumber) -> first();
+                if($bil){
+                    $data= [];
+                    $data2 = $data -> where('exit_olds.id' , '<=' , $bil -> id );
+                }
+
+            }
+        }
 
 
         $bills = array();
         $data22 =[] ;
-        foreach ($data-> get() as $bill){
+        foreach (is_array($data) ? $data   : $data -> get()  as $bill){
             $bill -> type = 1 ;
             array_push($bills , $bill);
         }
-        foreach ($data2 -> get() as $bill){
+        foreach ( is_array($data2) ? $data2   : $data2 -> get() as $bill){
             $bill -> type = 0 ;
             $bill -> item_name_ar  = '--';
             $bill -> item_name_en  = '--';
@@ -524,13 +567,31 @@ class ReportController extends Controller
         $startDate = Carbon::now()->addYears(-5);
         $endDate = Carbon::now() -> addDays(1);
 
+
+
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
         if($request -> has('isStartDate')){
             $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
         }
 
         if($request -> has('isEndDate')){
             $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
         }
+
 
 
         $accounts = DB::table('accounts_trees')
@@ -581,7 +642,7 @@ class ReportController extends Controller
         }
 
 
-        return view('Report.account_balance_report',compact('accounts' , 'routes'));
+        return view('Report.account_balance_report',compact('accounts' , 'routes' , 'period' , 'period_ar'));
 
     }
 

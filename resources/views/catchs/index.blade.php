@@ -66,7 +66,8 @@
                                     <tr>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.date')}}</th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.basedon_no')}} </th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.expense_type')}} </th>
+                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.from')}} </th>
+                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.to')}} </th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.total_money')}} </th>
                                         <th class="text-end text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.actions')}}</th>
                                     </tr>
@@ -77,7 +78,8 @@
                                             <tr>
                                                 <td class="text-center">{{$bill -> date}}</td>
                                                 <td class="text-center">{{$bill -> docNumber}}</td>
-                                                <td class="text-center">{{Config::get('app.locale') == 'ar' ? $bill -> name_ar : $bill -> name_en }}</td>
+                                                <td class="text-center">{{$bill -> from_account_name }}</td>
+                                                <td class="text-center">{{$bill -> from_account_name }}</td>
                                                 <td class="text-center">{{$bill -> amount}}</td>
                                                 <td class="text-center">
                                                     <button type="button" class="btn btn-labeled btn-secondary editBtn" value="{{$bill -> id}}">
@@ -119,9 +121,9 @@
 
 
 <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header no-print">
                 <label class="modelTitle"> {{__('main.catches_create')}}</label>
                 <button type="button" class="close modal-close-btn close-create"  data-bs-dismiss="modal"  aria-label="Close" >
                     <span aria-hidden="true">&times;</span>
@@ -131,6 +133,7 @@
                 <form   method="POST" action="{{ route('storeCatch') }}"
                         enctype="multipart/form-data" >
                     @csrf
+
 
                     <div class="row">
                         <div class="col-6">
@@ -154,18 +157,40 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>{{ __('main.bill_client_name') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                <input class="form-control" id="client" name="client" type="text">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-6 " >
                             <div class="form-group">
-                                <label>{{ __('main.expense_type') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
-                                <select id="type_id" name="type_id" class="form-control">
-                                    @foreach($types as $type)
-                                        @if($type -> type == 1)
-                                            <option value="{{$type -> id}}">{{Config::get('app.locale') == 'ar' ? $type -> name_ar : $type -> name_en}}</option>
-                                        @endif
+                                <label>{{ __('main.from') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                <select id="from_account" name="from_account" class="form-control">
+                                    @foreach($accounts as $account)
+                                        <option value="{{$account -> id}}">{{$account -> name}}</option>
+
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+                        <div class="col-6" >
+                            <div class="form-group">
+                                <label>{{ __('main.to') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                <select id="to_account" name="to_account" class="form-control">
+                                    @foreach($accounts as $account)
+                                        <option value="{{$account -> id}}">{{$account -> name}}</option>
+
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
                         <div class="col-6">
                             <div class="form-group">
                                 <label>{{ __('main.money') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
@@ -173,6 +198,7 @@
 
                             </div>
                         </div>
+
 
                     </div>
                     <div class="row">
@@ -189,6 +215,9 @@
                         <div class="col-6" style="display: block; margin: 20px auto; text-align: center;">
                             <button type="submit" class="btn btn-labeled btn-primary" id="submitBtn" >
                                 {{__('main.save_btn')}}</button>
+
+{{--                            <button type="button" class="btn btn-labeled btn-secondary no-print" id="printtBtn" onclick="printPage()" >--}}
+{{--                                print</button>--}}
                         </div>
                     </div>
                 </form>
@@ -208,7 +237,7 @@
                 </button>
             </div>
             <div class="modal-body" id="smallBody">
-                <img src="../assets/img/warning.png" class="alertImage">
+                <img src="{{asset('assets/img/warning.png')}}" class="alertImage">
                 <label class="alertTitle">{{__('main.delete_alert')}}</label>
                 <br> <label  class="alertSubTitle" id="modal_table_bill"></label>
                 <div class="row">
@@ -293,6 +322,8 @@
                             $(".modal-body #type_id").attr('disabled' , false);
                             $(".modal-body #notes").attr('disabled' , false);
                             $(".modal-body #submitBtn").show();
+                            $(".modal-body #printtBtn").hide();
+
 
                         },
                         complete: function() {
@@ -333,26 +364,24 @@
                             // return the result
                             success: function(result) {
                                 $('#createModal').modal("show");
-                                if(response.image_url){
-                                    var img =  '../images/Category/' + response.image_url ;
-
-                                    $(".modal-body #profile-img-tag").attr('src' , img );
-                                }
-
                                 $(".modal-body #date").val(response.date );
                                 $(".modal-body #notes").val(response.notes);
                                 $(".modal-body #docNumber").val(response.docNumber);
 
                                 $(".modal-body #id").val( response.id );
-                                $(".modal-body #type_id").val(response.type_id);
+                                $(".modal-body #from_account").val(response.from_account);
+                                $(".modal-body #to_account").val(response.to_account);
                                 $(".modal-body #amount").val(response.amount);
-
+                                $(".modal-body #client").val(response.client);
 
                                 $(".modal-body #date").attr('readOnly' , true);
                                 $(".modal-body #amount").attr('readOnly' , true);
-                                $(".modal-body #type_id").attr('disabled' , true);
+                                $(".modal-body #from_account").attr('disabled' , true);
+                                $(".modal-body #to_account").attr('disabled' , true);
                                 $(".modal-body #notes").attr('disabled' , true);
+                                $(".modal-body #client").attr('disabled' , true);
                                 $(".modal-body #submitBtn").hide();
+                                $(".modal-body #printtBtn").show();
 
                             },
                             complete: function() {
@@ -409,6 +438,33 @@
 
 
     });
+    function printPage(){
+
+
+
+        var css = '@page { size:A4 portrait; }',
+            head = document.head || document.getElementsByTagName('head')[0],
+            style = document.createElement('style');
+
+        style.type = 'text/css';
+        style.media = 'print';
+
+        if (style.styleSheet){
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
+
+        head.appendChild(style);
+
+        const originalHTML = document.body.innerHTML;
+        document.body.innerHTML = document.getElementById('createModal').innerHTML;
+        document.querySelectorAll('.not-print')
+            .forEach(img => img.remove())
+        window.print();
+        document.body.innerHTML = originalHTML ;
+
+    }
     function confirmDelete(){
         let url = "{{ route('expenses_type_destroy', ':id') }}";
         url = url.replace(':id', id);

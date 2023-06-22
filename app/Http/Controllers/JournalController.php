@@ -102,7 +102,7 @@ class JournalController extends Controller
                 $subChild -> childs = $list22 ? $list22  : [];
             }
         }
-    //    return  $accounts ;
+        //=return  $accounts1 ;
         return view('Report.incoming_list_report',compact('accounts1' , 'routes' , 'period' , 'period_ar'));
     }
 
