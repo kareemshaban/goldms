@@ -274,12 +274,12 @@ margin: 30px auto;" value="{{__('main.save_btn')}}"></input>
                         showSuggestions(response);
                     } else {
                         //showNotFoundAlert
-                        openDialog();
+
                         document.getElementById('add_item').value = '' ;
                     }
                 } else {
                     //showNotFoundAlert
-                    openDialog();
+
                     document.getElementById('add_item').value = '' ;
                 }
             }
@@ -290,14 +290,14 @@ margin: 30px auto;" value="{{__('main.save_btn')}}"></input>
 
         console.log(response);
         $data = '';
-        $.each(response,function (i,item) {
-            if(item.item_type == 1) {
-                if(item.state == 1){
+        $.each(response, function (i, item) {
+            if (item.item_type == 1 || item.item_type == 3) {
+                if (item.state == 1) {
                     suggestionItems[item.id] = item;
                     if (local == 'ar') {
-                        $data += '<li class="select_product" data-item-id="' + item.id + '">' + item.name_ar + '</li>';
+                        $data += '<li class="select_product" data-item-id="' + item.id + '">' + item.name_ar + '--' + item.code + '</li>';
                     } else {
-                        $data += '<li class="select_product" data-item-id="' + item.id + '">' + item.name_en + '</li>';
+                        $data +='<li class="select_product" data-item-id="'+item.id+'">'+item.name_ar + '--' + item.code  +'</li>';
                     }
                 }
 

@@ -16,6 +16,7 @@ class Expenses extends Model
       'amount',
       'notes',
         'date',
-        'docNumber'
+        'docNumber',
+        'payment_type' // 0 cash 1 network
     ];
 }

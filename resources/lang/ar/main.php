@@ -341,4 +341,5 @@ return [
     'sales_total_report' => 'تقرير مبيعات إجمالي',
     'purchase_total_report' => 'تقرير مشتريات إجمالي',
     'purchase_sales_total_report' => 'تقرير مبيعات ومشتريات يومي',
+    'movement_report' => 'تقرير الحركة' ,
 ];

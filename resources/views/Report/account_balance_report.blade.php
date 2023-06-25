@@ -55,13 +55,41 @@
                 <div class="card-body px-0 pt-0 pb-2">
 
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h4 class="m-0 font-weight-bold text-primary text-center">{{__('main.balance_report')}}</h4>
-                            <br>
-                            <h3 class="text-center">  {{Config::get('app.locale') == 'ar' ? $period_ar : $period}} </h3>
+                        <div class="card-header py-3 " style="border:solid 1px gray">
+                            <header>
+                                <div class="container">
+                                    <div class="row" style="direction: ltr;">
+                                        <div class="col-sm c">
+                                            <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
+
+                                        <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
+                                       <br>  Vat No :   {{$company ? $company -> taxNumber : ''}}
+                                      <br>  Tel :   {{ $company ? $company -> phone : ''}}
+
+                                   </span>
+                                        </div>
+                                        <div class="col-sm c">
+                                            <label style="text-align: center; font-weight: bold"> تقرير ميزان المراجعة</label>
+                                        </div>
+                                        <div class="col-sm c">
+                                       <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
+
+                                        <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
+                                       <br>  ر.ض :  {{$company ? $company -> registrationNumber : ''}}
+                                      <br>  تليفون :   {{$company ? $company -> phone : ''}}
+                                       </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </header>
+
                         </div>
 
+
                         <div class="card-body">
+                            <h3 class="text-center">  {{Config::get('app.locale') == 'ar' ? $period_ar : $period}} </h3>
+
                             <div class="table-responsive p-0">
                                 <table  class="table table-bordered" width="100%" cellspacing="0">
                                     <thead>

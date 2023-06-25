@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class AccountsTree extends Model
 {
     use HasFactory;
-    protected $fillable = ['code','name','type','parent_id','parent_code','level','list','department','side'];
+    protected $fillable = ['code','name','type','parent_id','parent_code','level','list','department','side' , 'idd '];
 }

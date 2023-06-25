@@ -16,6 +16,8 @@ use App\Models\Item;
 use App\Models\Karat;
 use App\Models\Pricing;
 use App\Models\Warehouse;
+use App\Models\CompanyInfo;
+use App\Models\ExitWorkDetails ;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -92,9 +94,12 @@ class ReportController extends Controller
             array_push($routes , $role -> route);
         }
 
-        return view('Report.item_list_report_result' , ['data' => $items2 , 'routes' => $routes])  ;
+        $company = CompanyInfo::all() -> first();
+
+        return view('Report.item_list_report_result' , ['data' => $items2 , 'routes' => $routes , 'company' => $company])  ;
 
     }
+
 
     public function sold_items_report(){
         $karats = Karat::all();
@@ -118,31 +123,47 @@ class ReportController extends Controller
     }
 
     public function sold_items_report_search(Request $request){
-        $items = DB::table('items') -> join('karats' , 'items.karat_id' , '=' , 'karats.id')
-            -> join('categories' , 'items.category_id' , '=' , 'categories.id')
-            -> join('exit_work_details' , 'items.id' , '=','exit_work_details.item_id')
-            -> select('items.*' , 'karats.name_ar as karat_name_ar' , 'karats.name_en as karat_name_en' ,
-                'categories.name_ar as category_name_ar' , 'categories.name_en as category_name_en', 'exit_work_details.bill_id as bill_id' )
-            ->where('item_type' , '<>' , 2);
+
+
+        // $items = DB::table('items') -> join('karats' , 'items.karat_id' , '=' , 'karats.id')
+        //     -> join('categories' , 'items.category_id' , '=' , 'categories.id')
+        //     -> join('exit_work_details' , 'items.id' , '=','exit_work_details.item_id')
+        //     -> select('items.*' , 'karats.name_ar as karat_name_ar' , 'karats.name_en as karat_name_en' ,
+        //         'categories.name_ar as category_name_ar' , 'categories.name_en as category_name_en', 'exit_work_details.bill_id as bill_id' )
+        //     -> where('item_type' , '<>' , 2)
+        //     -> where('state' , '=' , 0);
+
+        $items = DB::table('exit_work_details')
+        -> join('exit_works' , 'exit_work_details.bill_id' , '=' , 'exit_works.id')
+        -> join('karats' , 'exit_work_details.karat_id' , '=' , 'karats.id')
+        ->join('items' , 'exit_work_details.item_id' , '=' , 'items.id')
+        -> select('items.*' , 'karats.name_ar as karat_name_ar' , 'karats.name_en as karat_name_en' ,
+        'exit_work_details.bill_id as bill_id' , 'exit_works.date as bill_date' ,'exit_works.bill_number as bill_no')
+        -> where('exit_works.total_money' , '>' , 0) ;
+
+
+
+
 
         if($request -> karat > 0) $items = $items -> where('items.karat_id' , '=' ,$request -> karat ) -> get();
-        if($request -> category > 0) $items = $items -> where('items.category_id' , '=' ,$request -> category ) -> get();
+        // if($request -> category > 0) $items = $items -> where('items.category_id' , '=' ,$request -> category ) -> get();
         if($request -> code != null ) $items = $items -> where('items.code' , '=' , $request ->code ) -> get();
         if($request -> name != null) $items = $items->where('items.name_ar' , 'like' , '%'.$request -> name .'%') -> get();
         if($request -> weight > 0) $items = $items -> where('items.weight' , '=' ,$request -> weight ) -> get();
 
-        if($request -> karat == 0  && $request -> category == 0 &&
+
+        if($request -> karat == 0  &&
             $request -> code == null && $request -> name == null && $request -> weight == 0){
             $data = $items -> get();
 
         } else {
             $data = $items ;
         }
-        foreach ($data as $item){
-          $bill = ExitWork::find($item -> bill_id);
-          $item -> bill_date = $bill -> date ;
-            $item -> bill_no = $bill -> bill_number ;
-        }
+        // foreach ($data as $item){
+        //   $bill = ExitWork::find($item -> bill_id);
+        //   $item -> bill_date = $bill -> date ;
+        //     $item -> bill_no = $bill -> bill_number ;
+        // }
         if($request -> has('isStartDate')) $data = $data -> where('bill_date' , '>=' , Carbon::parse($request -> StartDate) -> startOfDay());
         if($request -> has('isEndDate'))   $data = $data -> where('bill_date' , '<=' , Carbon::parse($request -> EndDate) -> addDay());
 
@@ -161,7 +182,37 @@ class ReportController extends Controller
             array_push($routes , $role -> route);
         }
 
-        return view('Report.sold_item_list_report_result' , compact('data' , 'routes'))  ;
+        $startDate = Carbon::now()->addYears(-5);
+        $endDate = Carbon::now() -> addDays(1);
+
+
+
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+
+        $company = CompanyInfo::all() -> first();
+        return view('Report.sold_item_list_report_result' , compact('data' , 'routes' , 'period' , 'period_ar' , 'company'))  ;
     }
 
     public function sales_report(){
@@ -291,8 +342,37 @@ class ReportController extends Controller
             array_push($routes , $role -> route);
         }
 
+        $startDate = Carbon::now()->addYears(-5);
+        $endDate = Carbon::now() -> addDays(1);
 
-        return view('Report.sales_report_result' , compact('bills', 'grouped_ar' ,'grouped_en' , 'routes'))  ;
+
+
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+        $company = CompanyInfo::all() -> first();
+
+        return view('Report.sales_report_result' , compact('bills', 'grouped_ar' ,'grouped_en' , 'routes' , 'period' , 'period_ar' ,'company' ))  ;
     }
 
     public function purchase_report(){
@@ -370,7 +450,31 @@ class ReportController extends Controller
             array_push($routes , $role -> route);
         }
 
-        return view('Report.purchase_report_result' , compact('bills', 'grouped_ar' ,'grouped_en' , 'routes'))  ;
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+        $company = CompanyInfo::all() -> first();
+        return view('Report.purchase_report_result' , compact('bills', 'grouped_ar' ,'grouped_en' , 'routes' , 'period' , 'period_ar' , 'company'))  ;
 
 
     }
@@ -422,7 +526,32 @@ class ReportController extends Controller
             array_push($routes , $role -> route);
         }
 
-        return view('company.accountMovement' , compact('type' , 'movements' , 'slag' , 'subSlag' , 'routes'));
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+        $company = CompanyInfo::all() -> first();
+
+        return view('company.accountMovement' , compact('type' , 'movements' , 'slag' , 'subSlag' , 'routes' , 'period' , 'period_ar', 'company'));
     }
     public function gold_stock_report(){
 
@@ -457,7 +586,6 @@ class ReportController extends Controller
 
 
 
-
         $karats = Karat::all();
         $work = $workWarehouses ->get() -> groupBy('karat_id') -> map(function ($item) {
             return [
@@ -471,6 +599,37 @@ class ReportController extends Controller
                 'out_weight'=> $item -> sum('out_weight'),
             ];
         });
+
+
+
+
+      $works = DB::table('exit_work_details')
+      -> join('exit_works' , 'exit_work_details.bill_id' , '=' , 'exit_works.id')
+      -> where('exit_works.total_money' , '<' , 0)
+      ->select('exit_work_details.*' , 'exit_works.date');
+
+      $olds = DB::table('exit_old_details')
+      -> join('exit_olds' , 'exit_old_details.bill_id' , '=' , 'exit_olds.id')
+      -> where('exit_olds.total_money' , '<' , 0)
+      ->select('exit_old_details.*' , 'exit_olds.date');
+
+
+      $workR = $works ->get() -> groupBy('karat_id') -> map(function ($item) {
+        return [
+            'RWeight' => $item -> sum('weight'),
+        ];
+    });
+
+    $oldR = $olds ->get() -> groupBy('karat_id') -> map(function ($item) {
+        return [
+            'RWeight' => $item -> sum('weight'),
+        ];
+    });
+
+
+
+
+
         $slag =  14;
         $subSlag = 146 ;
 
@@ -489,7 +648,33 @@ class ReportController extends Controller
             array_push($routes , $role -> route);
         }
 
-        return view('Item.gold_stock' , compact('work' , 'old' , 'karats' , 'slag' , 'subSlag' , 'routes')) ;
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+
+        $company = CompanyInfo::all() -> first();
+        return view('Item.gold_stock' , compact('work' , 'old' , 'karats' , 'slag' , 'subSlag' , 'routes' ,
+        'period' , 'period_ar' , 'company'  , 'workR' , 'oldR')) ;
     }
 
     public function daily_all_movements(){
@@ -559,7 +744,34 @@ class ReportController extends Controller
             array_push($routes , $role -> route);
         }
 
-        return view('Report.daily_all_movements_result' , compact('karats' , 'work' , 'old' , 'enterMoney' , 'exitMoney' , 'routes'));
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+        $company = CompanyInfo::all() -> first();
+
+
+        return view('Report.daily_all_movements_result' , compact('karats' , 'work' , 'old' , 'enterMoney' ,
+        'exitMoney' , 'routes' , 'period' , 'period_ar' , 'company'));
     }
 
 
@@ -641,8 +853,8 @@ class ReportController extends Controller
             array_push($routes , $role -> route);
         }
 
-
-        return view('Report.account_balance_report',compact('accounts' , 'routes' , 'period' , 'period_ar'));
+        $company = CompanyInfo::all() -> first();
+        return view('Report.account_balance_report',compact('accounts' , 'routes' , 'period' , 'period_ar' , 'company'));
 
     }
 
@@ -705,16 +917,14 @@ class ReportController extends Controller
             -> get();
 
         $catchs = DB::table('catch_recipts')
-            -> join('expense_types' , 'catch_recipts.type_id' , '=' , 'expense_types.id')
-            -> select('catch_recipts.*' , 'expense_types.name_ar as docType')
+            -> select('catch_recipts.*' )
             ->where('date','>=',$startDate)
             ->where('date','<=',$endDate)
             -> get();
 
 
         $expenses = DB::table('expenses')
-            -> join('expense_types' , 'expenses.type_id' , '=' , 'expense_types.id')
-            -> select('expenses.*' , 'expense_types.name_ar as docType')
+            -> select('expenses.*' )
             ->where('date','>=',$startDate)
             ->where('date','<=',$endDate)
             -> get();
@@ -736,7 +946,7 @@ class ReportController extends Controller
             $holder -> id = $em -> id ;
             $holder -> docNumber =  $em -> based_on_bill_number ? $em -> based_on_bill_number  : $em -> doc_number  ;
             $holder -> date = $em -> date  ;
-            $holder -> docType =  $em -> based_on_bill_number ? (str_starts_with($em -> based_on_bill_number , 'SWSI') ? 'فاتور شراء ذهب كسر' : '')  : 'مستند خروج نقدية' ;
+            $holder -> docType =  $em -> based_on_bill_number ? (str_starts_with($em -> based_on_bill_number , 'SPOI') ? 'فاتور شراء ذهب كسر' : '')  : 'مستند خروج نقدية' ;
             $holder -> credit = 0 ;
             $holder -> debit = $em -> amount ;
             array_push($holders , $holder);
@@ -747,7 +957,7 @@ class ReportController extends Controller
             $holder -> id = $em -> id ;
             $holder -> docNumber =  $em -> docNumber ;
             $holder -> date = $em -> date  ;
-            $holder -> docType =  $em -> docType  ;
+            $holder -> docType =  'مستند قبض حر'  ;
             $holder -> credit = $em -> amount ;
             $holder -> debit =  0;
             array_push($holders , $holder);
@@ -757,7 +967,7 @@ class ReportController extends Controller
             $holder -> id = $em -> id ;
             $holder -> docNumber =  $em -> docNumber ;
             $holder -> date = $em -> date  ;
-            $holder -> docType =  $em -> docType  ;
+            $holder -> docType =  'مستند صرف حر'  ;
             $holder -> credit = 0 ;
             $holder -> debit =  $em -> amount;
             array_push($holders , $holder);
@@ -778,7 +988,34 @@ class ReportController extends Controller
         foreach ($roles as $role){
             array_push($routes , $role -> route);
         }
-        return view('Report.box_movement_report_result' , compact('routes' , 'holders'));
+
+
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+        $company = CompanyInfo::all() -> first();
+
+        return view('Report.box_movement_report_result' , compact('routes' , 'holders' , 'period' , 'period_ar' , 'company'));
 
 
     }
@@ -839,7 +1076,7 @@ class ReportController extends Controller
             $holder -> id = $em -> id ;
             $holder -> docNumber =  $em -> based_on_bill_number ? $em -> based_on_bill_number  : $em -> doc_number  ;
             $holder -> date = $em -> date  ;
-            $holder -> docType =  $em -> based_on_bill_number ? (str_starts_with($em -> based_on_bill_number , 'SWSI') ? 'فاتور شراء ذهب كسر' : '')  : 'مستند خروج نقدية' ;
+            $holder -> docType =  $em -> based_on_bill_number ? (str_starts_with($em -> based_on_bill_number , 'SPOI') ? 'فاتور شراء ذهب كسر' : '')  : 'مستند خروج نقدية' ;
             $holder -> credit = 0 ;
             $holder -> debit = $em -> amount ;
             array_push($holders , $holder);
@@ -860,7 +1097,33 @@ class ReportController extends Controller
         foreach ($roles as $role){
             array_push($routes , $role -> route);
         }
-        return view('Report.bank_movement_report_result' , compact('routes' , 'holders'));
+
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+        $company = CompanyInfo::all() -> first();
+
+        return view('Report.bank_movement_report_result' , compact('routes' , 'holders' , 'period' , 'period_ar' , 'company'));
     }
 
     public function sales_total_report(){
@@ -929,9 +1192,32 @@ class ReportController extends Controller
 
         $all =  collect($bills)  -> merge($data22);
 
-        //return $all ;
 
-        return view('Report.sales_total_report_result' , compact('all' , 'routes'));
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+        $company = CompanyInfo::all() -> first();
+        return view('Report.sales_total_report_result' , compact('all' , 'routes' ,'period' , 'period_ar' , 'company'));
 
 
     }
@@ -1000,10 +1286,32 @@ class ReportController extends Controller
         }
 
         $all =  collect($bills)  -> merge($data22);
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
 
-     //   return $all ;
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
 
-        return view('Report.purchase_total_report_result' , compact('all' , 'routes'));
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+        $company = CompanyInfo::all() -> first();
+
+        return view('Report.purchase_total_report_result' , compact('all' , 'routes' , 'period' , 'period_ar' , 'company'));
 
     }
     public function purchase_sales_total_report(){
@@ -1024,6 +1332,163 @@ class ReportController extends Controller
         return view('Report.purchase_sales_total_report' , compact('routes'));
     }
     public function purchase_sales_total_report_search(Request $request){
+
+    }
+
+    public function movement_report(){
+        $roles = DB::table('role_views')
+        -> join('views' , 'role_views.view_id' , '=' , 'views.id')
+        ->join('roles' , 'role_views.role_id' , '=' , 'roles.id')
+        ->select('role_views.*' , 'views.name_ar as view_name_ar' ,  'views.name_en as view_name_en' ,
+            'roles.name_ar as role_name_ar' ,  'roles.name_en as role_name_en' , 'views.route')
+        ->where('role_views.role_id' , '=' , Auth::user() -> role_id)
+        ->where('role_views.all_auth' , '=' , 1)
+        -> get();
+
+
+    $routes = [] ;
+    foreach ($roles as $role){
+        array_push($routes , $role -> route);
+    }
+    return view('Report.movement_report' , compact('routes'));
+    }
+
+    public function movement_report_search(Request $request){
+
+        $roles = DB::table('role_views')
+        -> join('views' , 'role_views.view_id' , '=' , 'views.id')
+        ->join('roles' , 'role_views.role_id' , '=' , 'roles.id')
+        ->select('role_views.*' , 'views.name_ar as view_name_ar' ,  'views.name_en as view_name_en' ,
+            'roles.name_ar as role_name_ar' ,  'roles.name_en as role_name_en' , 'views.route')
+        ->where('role_views.role_id' , '=' , Auth::user() -> role_id)
+        ->where('role_views.all_auth' , '=' , 1)
+        -> get();
+        $routes = [] ;
+        foreach ($roles as $role){
+            array_push($routes , $role -> route);
+        }
+
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+        if($request -> has('isStartDate')){
+            $startDate = $request->StartDate;
+
+            $period .= $startDate ;
+            $period_ar .= $startDate ;
+        } else {
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+        }
+
+        if($request -> has('isEndDate')){
+            $endDate =  Carbon::parse($request->EndDate) -> addDay()  ;
+
+            $period .= ' -- '  . $endDate -> format('d-m-Y') ;
+            $period_ar .= ' -- '  . $endDate -> format('d-m-Y');
+        } else {
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+        }
+
+        $company = CompanyInfo::all() -> first();
+
+        $karats = Karat::all();
+
+        $Warehouses = Warehouse::where('type' , '<>' , 2);
+        if($request -> has('isStartDate')) $Warehouses = $Warehouses -> where('date' , '>=' , Carbon::parse($request -> StartDate) );
+        if($request -> has('isEndDate'))   $Warehouses = $Warehouses -> where('date' , '<=' , Carbon::parse($request -> EndDate) -> addDay());
+        $ware = $Warehouses ->get() -> groupBy('karat_id') -> map(function ($item) {
+            return [
+                'enter_weight' => $item -> sum('enter_weight'),
+                'out_weight'=> $item -> sum('out_weight'),
+            ];
+        });
+        $data = collect($ware);
+
+
+
+        $returnW = DB::table('exit_work_details')
+        -> join('exit_works' , 'exit_work_details.bill_id' , '=' , 'exit_works.id')
+        -> select('exit_work_details.*' , 'exit_works.date' )
+        ->where('exit_works.returned_bill_id' , '>'  , 0);
+        $returnO = DB::table('exit_old_details')
+        -> join('exit_olds' , 'exit_old_details.bill_id' , '=' , 'exit_olds.id')
+        -> select('exit_old_details.*' , 'exit_olds.date' )
+        ->where('exit_olds.returned_bill_id' , '>'  , 0) ;
+        if($request -> has('isStartDate')) $returnW = $returnW -> where('date' , '>=' , Carbon::parse($request -> StartDate) );
+        if($request -> has('isEndDate'))   $returnW = $returnW -> where('date' , '<=' , Carbon::parse($request -> EndDate) -> addDay());
+        if($request -> has('isStartDate')) $returnO = $returnO -> where('date' , '>=' , Carbon::parse($request -> StartDate) );
+        if($request -> has('isEndDate'))   $returnO = $returnO -> where('date' , '<=' , Carbon::parse($request -> EndDate) -> addDay());
+        $reW = $returnW ->get() -> groupBy('karat_id') -> map(function ($item) {
+            return [
+                'weight' => $item -> sum('weight'),
+            ];
+        });
+
+
+        $reO = $returnO ->get() -> groupBy('karat_id') -> map(function ($item) {
+            return [
+                'weight' => $item -> sum('weight'),
+            ];
+        });
+
+        $salesW = DB::table('exit_works')
+        ->where('exit_works.returned_bill_id' , '='  , 0)
+        -> sum('exit_works.total_money');
+
+        $salesO = DB::table('exit_olds')
+        ->where('exit_olds.returned_bill_id' , '='  , 0)
+        -> sum('exit_olds.total_money');
+
+        $returnW = DB::table('exit_works')
+        ->where('exit_works.returned_bill_id' , '<>'  , 0)
+        -> sum('exit_works.total_money');
+
+        $returnO = DB::table('exit_olds')
+        ->where('exit_olds.returned_bill_id' , '<>'  , 0)
+        -> sum('exit_olds.total_money');
+
+
+        $purchaseW = DB::table('enter_works')
+        -> sum('enter_works.total_money');
+
+        $purchaseO = DB::table('enter_olds')
+        -> sum('enter_olds.total_money');
+
+
+        $salesWorkVAl = DB::table('exit_work_details')
+        ->join('exit_works' , 'exit_work_details.bill_id' , '=' , 'exit_works.id')
+        -> join('items' , 'exit_work_details.item_id' , '=' ,'items.id')
+        ->where('exit_works.returned_bill_id' , '='  , 0)
+        -> select(DB::raw('sum(items.made_Value * items.weight) as total'))->get() -> first();
+
+        $returnWorkVAl = DB::table('exit_work_details')
+        ->join('exit_works' , 'exit_work_details.bill_id' , '=' , 'exit_works.id')
+        -> join('items' , 'exit_work_details.item_id' , '=' ,'items.id')
+        ->where('exit_works.returned_bill_id' , '<>'  , 0)
+        -> select(DB::raw('sum(items.made_Value * items.weight) as total'))->get() -> first();
+
+        $expenses = DB::table('expenses')
+        ->join('accounts_trees' , 'expenses.to_account' , '=' , 'accounts_trees.id')
+        ->select('expenses.*' , 'accounts_trees.name as account_name');
+
+        if($request -> has('isStartDate')) $expenses = $expenses -> where('date' , '>=' , Carbon::parse($request -> StartDate) );
+        if($request -> has('isEndDate'))   $expenses = $expenses -> where('date' , '<=' , Carbon::parse($request -> EndDate) -> addDay());
+
+
+
+        $exp = $expenses ->get() -> groupBy('account_name') -> map(function ($item) {
+            return [
+                'total' => $item -> sum('amount'),
+            ];
+        });
+
+
+
+
+        return view('Report.movement_report_result' , compact('company' , 'routes' , 'data' , 'period' , 'period_ar' , 'karats' , 'reW' , 'reO' ,
+        'salesW' , 'salesO' , 'returnW' , 'returnO' , 'purchaseW' , 'purchaseO' , 'salesWorkVAl' , 'returnWorkVAl' , 'exp'));
 
     }
 

@@ -392,7 +392,8 @@ class ItemController extends Controller
         $single = $this->getSingleProduct($code);
 
         if ($single) {
-            $single->price = $price->price_21 * $single->karat->transform_factor;
+            $trans = $single->karat->transform_factor ;
+            $single->price = $price->price_21 * $trans;
             $materials = ItemMaterials::where('item_id', '=', $single->id)->get();
             if (count($materials) == 0) {
 
@@ -418,7 +419,8 @@ class ItemController extends Controller
 
             foreach ($product as $item) {
                 if ($item->karat_id > 0) {
-                    $item->price = $price->price_21 * ($item->karat->transform_factor);
+                    $trans = $item->karat->transform_factor ;
+                    $item->price = $price->price_21 * $trans ;
                 }
                 $materials = ItemMaterials::where('item_id', '=', $item->id)->get();
                 if (count($materials) == 0) {

@@ -79,7 +79,7 @@
                                                 <td class="text-center">{{$bill -> date}}</td>
                                                 <td class="text-center">{{$bill -> docNumber}}</td>
                                                 <td class="text-center">{{$bill -> from_account_name }}</td>
-                                                <td class="text-center">{{$bill -> from_account_name }}</td>
+                                                <td class="text-center">{{$bill -> to_account_name }}</td>
                                                 <td class="text-center">{{$bill -> amount}}</td>
                                                 <td class="text-center">
                                                     <button type="button" class="btn btn-labeled btn-secondary editBtn" value="{{$bill -> id}}">
@@ -198,6 +198,17 @@
 
                             </div>
                         </div>
+                        <div class="col-6 " >
+                            <div class="form-group">
+                                <label>{{ __('main.payment_method') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                <select class="form-control" name="payment_type" id="payment_type">
+                                    <option value="0"> {{__('main.cash')}} </option>
+                                    <option value="1"> {{__('main.visa')}} </option>
+
+                                </select>
+
+                            </div>
+                        </div>
 
 
                     </div>
@@ -216,8 +227,8 @@
                             <button type="submit" class="btn btn-labeled btn-primary" id="submitBtn" >
                                 {{__('main.save_btn')}}</button>
 
-{{--                            <button type="button" class="btn btn-labeled btn-secondary no-print" id="printtBtn" onclick="printPage()" >--}}
-{{--                                print</button>--}}
+                                  <button type="button" class="btn btn-labeled btn-secondary no-print" id="printtBtn" >  print</button>
+
                         </div>
                     </div>
                 </form>
@@ -296,10 +307,11 @@
 
             $.ajax({
                 type: 'get',
-                url: '/get_Catch_no',
+                url: 'get_Catch_no',
                 dataType: 'json',
 
                 success: function (response) {
+                    console.log(response);
                     let href = $(this).attr('data-attr');
                     $.ajax({
                         url: href,
@@ -313,14 +325,20 @@
                             $(".modal-body #notes").val("");
                             $(".modal-body #docNumber").val(response);
 
+                            $(".modal-body #id").val(0);
+
+
                             $(".modal-body #id").val( 0 );
                             $(".modal-body #type_id").val(0);
                             $(".modal-body #amount").val(0);
+                            $(".modal-body #payment_type").val(0);
+
 
                             $(".modal-body #date").attr('readOnly' , false);
                             $(".modal-body #amount").attr('readOnly' , false);
                             $(".modal-body #type_id").attr('disabled' , false);
                             $(".modal-body #notes").attr('disabled' , false);
+                            $(".modal-body #payment_type").attr('disabled' , false);
                             $(".modal-body #submitBtn").show();
                             $(".modal-body #printtBtn").hide();
 
@@ -373,6 +391,7 @@
                                 $(".modal-body #to_account").val(response.to_account);
                                 $(".modal-body #amount").val(response.amount);
                                 $(".modal-body #client").val(response.client);
+                                $(".modal-body #payment_type").val(response.payment_type);
 
                                 $(".modal-body #date").attr('readOnly' , true);
                                 $(".modal-body #amount").attr('readOnly' , true);
@@ -380,6 +399,8 @@
                                 $(".modal-body #to_account").attr('disabled' , true);
                                 $(".modal-body #notes").attr('disabled' , true);
                                 $(".modal-body #client").attr('disabled' , true);
+                                $(".modal-body #payment_type").attr('disabled' , true);
+
                                 $(".modal-body #submitBtn").hide();
                                 $(".modal-body #printtBtn").show();
 
@@ -434,6 +455,15 @@
             $('#createModal').modal("hide");
             id = 0 ;
         });
+
+        $(document).on('click' , '#printtBtn' , function (event) {
+            let url = "" ;
+            let val = document.getElementById('id').value    ;
+            url   = "{{ route('printCatch', ':id') }}";
+            url = url.replace(':id', val);
+            document.location.href = url;
+        });
+
 
 
 

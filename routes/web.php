@@ -147,6 +147,9 @@ Route::group(
 
     Route::get('/item_list_report', [App\Http\Controllers\ReportController::class, 'item_list_report'])->name('item_list_report');
     Route::post('/item_list_report', [App\Http\Controllers\ReportController::class, 'item_list_report_search'])->name('item_list_report_search');
+    Route::get('/item_list_report', [App\Http\Controllers\ReportController::class, 'item_list_report'])->name('item_list_report');
+
+
     Route::get('/sold_items_report', [App\Http\Controllers\ReportController::class, 'sold_items_report'])->name('sold_items_report');
     Route::post('/sold_items_report', [App\Http\Controllers\ReportController::class, 'sold_items_report_search'])->name('sold_items_report_search');
     Route::get('/sales_report', [App\Http\Controllers\ReportController::class, 'sales_report'])->name('sales_report');
@@ -169,6 +172,9 @@ Route::group(
     Route::post('/purchase_total_report', [App\Http\Controllers\ReportController::class, 'purchase_total_report_search'])->name('purchase_total_report_search');
     Route::get('/purchase_sales_total_report', [App\Http\Controllers\ReportController::class, 'purchase_sales_total_report'])->name('purchase_sales_total_report');
     Route::post('/purchase_sales_total_report', [App\Http\Controllers\ReportController::class, 'purchase_sales_total_report_search'])->name('purchase_sales_total_report_search');
+    Route::get('/movement_report', [App\Http\Controllers\ReportController::class, 'movement_report'])->name('movement_report');
+    Route::post('/movement_report', [App\Http\Controllers\ReportController::class, 'movement_report_search'])->name('movement_report_search');
+
 
 
 
@@ -274,6 +280,7 @@ Route::group(
     Route::get('/get_Expense_no', [\App\Http\Controllers\ExpensesController::class, 'get_Expense_no'])->name('get_Expense_no');
     Route::post('/storeExpense', [\App\Http\Controllers\ExpensesController::class, 'store'])->name('storeExpense');
     Route::get('/getExpense/{id}', [\App\Http\Controllers\ExpensesController::class, 'show'])->name('getExpense');
+    Route::get('/printExpense/{id}', [\App\Http\Controllers\ExpensesController::class, 'print'])->name('printExpense');
 
 
 
@@ -282,6 +289,7 @@ Route::group(
     Route::get('/get_Catch_no', [\App\Http\Controllers\CatchReciptController::class, 'get_Catch_no'])->name('get_Catch_no');
     Route::post('/storeCatch', [\App\Http\Controllers\CatchReciptController::class, 'store'])->name('storeCatch');
     Route::get('/getCatch/{id}', [\App\Http\Controllers\CatchReciptController::class, 'show'])->name('getCatch');
+    Route::get('/printCatch/{id}', [\App\Http\Controllers\CatchReciptController::class, 'print'])->name('printCatch');
 
 
 

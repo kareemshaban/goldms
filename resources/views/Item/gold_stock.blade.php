@@ -51,21 +51,48 @@
                         @else
                         <h1 class="h3 mb-0 text-primary-800 no-print">{{__('main.reports')}} / {{__('main.gold_stock_report')}}</h1>
                     @endif
+                    <button type="button" class="btn btn-info no-print" id="btnPrint">Print</button>
                 </div>
 
                 <div class="card-body px-0 pt-0 pb-2">
 
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary no-print">{{__('main.gold_stock')}}</h6>
-                            <br>
-                            <button type="button" class="btn btn-info no-print" id="btnPrint">Print</button>
-                        </div>
-                        <div class="card-body">
+                        <div class="card-header py-3 " style="border:solid 1px gray">
+                            <header>
+                                <div class="container">
+                                    <div class="row" style="direction: ltr;">
+                                        <div class="col-sm c">
+                                            <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
 
+                                        <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
+                                       <br>  Vat No :   {{$company ? $company -> taxNumber : ''}}
+                                      <br>  Tel :   {{ $company ? $company -> phone : ''}}
+
+                                   </span>
+                                        </div>
+                                        <div class="col-sm c">
+                                            <label style="text-align: center; font-weight: bold"> ميزان مراجعةرصيد الذهب </label>
+                                        </div>
+                                        <div class="col-sm c">
+                                       <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
+
+                                        <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
+                                       <br>  ر.ض :  {{$company ? $company -> registrationNumber : ''}}
+                                      <br>  تليفون :   {{$company ? $company -> phone : ''}}
+                                       </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </header>
+
+                        </div>
+
+                        <div class="card-body">
+                            <h4 class="text-center">  {{Config::get('app.locale') == 'ar' ? $period_ar : $period}} </h4>
                             <div class="table-responsive">
                                 <h3 class="text-center" style="margin: 15px auto ;">{{__('main.gold_stock_by_karat')}}</h3>
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered"  width="100%" cellspacing="0">
                                     <thead>
                                     <tr>
                                         <th class="text-center text-uppercase text-md-center font-weight-bolder opacity-7 ps-2 btn-info" colspan="{{count($karats) * 2}}">{{__('main.new_gold')}}</th>
@@ -97,8 +124,16 @@
                                     <tbody>
                                     @foreach($karats as $karat)
                                      @if( isset($work[$karat -> id]) )
-                                         <td class="text-center" style="color: green">{{$work[$karat -> id]['enter_weight']}}</td>
-                                         <td class="text-center" style="color: red">{{$work[$karat-> id]['out_weight']}}</td>
+                                     @if( isset($workR[$karat -> id]) )
+                                     <td class="text-center" style="color: green">{{$work[$karat -> id]['enter_weight']  -  $workR[$karat -> id]['RWeight']  }}</td>
+                                     <td class="text-center" style="color: red">{{$work[$karat-> id]['out_weight']   }}</td>
+                                     @else
+                                     <td class="text-center" style="color: green">{{$work[$karat -> id]['enter_weight']   }}</td>
+                                     <td class="text-center" style="color: red">{{$work[$karat-> id]['out_weight'] }}</td>
+                                     @endif
+
+
+
                                        @else
                                          <td class="text-center" style="color: green">0.0</td>
                                          <td class="text-center" style="color: red">0.0</td>
@@ -110,8 +145,14 @@
 
                                     @foreach($karats as $karat)
                                         @if(isset($old[$karat -> id]))
-                                            <td class="text-center" style="color: green">{{$old[$karat -> id]['enter_weight']}}</td>
-                                            <td class="text-center" style="color: red">{{$old[$karat-> id]['out_weight']}}</td>
+                                        @if(isset($oldR[$karat -> id]))
+                                        <td class="text-center" style="color: green">{{$old[$karat -> id]['enter_weight']  -  $oldR[$karat -> id]['RWeight']}}</td>
+                                        <td class="text-center" style="color: red">{{$old[$karat-> id]['out_weight']  +  $oldR[$karat -> id]['RWeight']}}</td>
+                                        @else
+                                        <td class="text-center" style="color: green">{{$old[$karat -> id]['enter_weight']}}</td>
+                                        <td class="text-center" style="color: red">{{$old[$karat-> id]['out_weight'] }}</td>
+                                        @endif
+
                                         @else
                                             <td class="text-center" style="color: green"> 0.0</td>
                                             <td class="text-center" style="color: red">0.0</td>
@@ -174,6 +215,7 @@
                                     $out_work_gold = 0 ;
                                     $in_old_gold = 0 ;
                                     $out_old_gold = 0 ;
+
                                     ?>
                                     @foreach($karats as $karat)
                                         @if( isset($work[$karat -> id]) )
@@ -188,12 +230,16 @@
                                             $out_old_gold += $old[$karat -> id]['out_weight']  * $karat -> transform_factor ;
                                             ?>
                                         @endif
+
+
+
+
                                     @endforeach
                                     <tr>
                                         <td class="text-center"  style="color: green">{{ round($in_work_gold , 2) }}</td>
-                                        <td class="text-center" style="color: red">{{round($out_work_gold , 2)}}</td>
+                                        <td class="text-center" style="color: red">{{round($out_work_gold  , 2)}}</td>
                                         <td class="text-center"  style="color: green">{{round($in_old_gold , 2)}}</td>
-                                        <td class="text-center" style="color: red">{{round($out_old_gold , 2)}}</td>
+                                        <td class="text-center" style="color: red">{{round($out_old_gold  , 2)}}</td>
                                     </tr>
                                     <tr>
                                         <td colspan="2" class="text-center"

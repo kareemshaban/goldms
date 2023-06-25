@@ -8,6 +8,8 @@ use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\CompanyInfo;
+
 
 class GoldConvertController extends WarehouseController
 {
@@ -53,7 +55,7 @@ class GoldConvertController extends WarehouseController
         foreach ($roles as $role) {
             array_push($routes, $role->route);
         }
-        return view('GoldConvert.create' , compact(  'routes'));
+        return view('GoldConvert.Create' , compact(  'routes'));
     }
 
     /**
@@ -141,11 +143,12 @@ class GoldConvertController extends WarehouseController
             -> join('karats' , 'karats.id' , '=' , 'gold_convert_items.karat_id')
             -> select('gold_convert_items.*' , 'karats.name_ar as karat_ar' , 'karats.name_en as karat_en' ,   'items.name_ar as item_ar' , 'items.name_en as item_en')
             -> where('gold_convert_items.docId' , '=' , $id)
-            -> get();
+           -> get();
 
 
+         $company = CompanyInfo::all() -> first();
 
-        return view('GoldConvert.view' , compact(  'routes' , 'data' , 'details'));
+        return view('GoldConvert.view' , compact(  'routes' , 'data' , 'details' , 'company'));
     }
 
     /**

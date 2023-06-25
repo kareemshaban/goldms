@@ -9,6 +9,7 @@ use App\Models\ExpenseType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Alkoumi\LaravelArabicTafqeet\Tafqeet;
 
 class ExpenseTypeController extends Controller
 {
@@ -94,6 +95,13 @@ class ExpenseTypeController extends Controller
         $type = ExpenseType::find($id);
         echo json_encode($type);
         exit();
+    }
+
+    public function print($id){
+        $bill = ExpenseType::find($id);
+        $valAr = Tafqeet::inArabic($bill -> amount,'sar');
+
+        return view('catchs.print' , compact('bill' , 'valAr'));
     }
 
     /**

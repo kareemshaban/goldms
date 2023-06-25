@@ -9,6 +9,7 @@ use App\Models\Pricing;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\CompanyInfo;
 use Illuminate\Support\Facades\DB;
 
 class JournalController extends Controller
@@ -66,7 +67,7 @@ class JournalController extends Controller
                 DB::raw('SUM(CASE WHEN account_movements.notes = "" THEN account_movements.debit END) debit'),
                 DB::raw('(CASE WHEN accounts_trees.parent_id = account_movements.account_id THEN accounts_trees.name END) childs'),
             )
-            ->groupBy('accounts_trees.id','accounts_trees.code','accounts_trees.name')
+            ->groupBy('accounts_trees.id','accounts_trees.code','accounts_trees.name' , 'accounts_trees.parent_id' , 'accounts_trees.level' , 'account_movements.account_id')
             ->where('accounts_trees.department',1)
             ->where('account_movements.date','>=',$startDate)
             ->where('account_movements.date','<=',$endDate)
@@ -103,7 +104,9 @@ class JournalController extends Controller
             }
         }
         //=return  $accounts1 ;
-        return view('Report.incoming_list_report',compact('accounts1' , 'routes' , 'period' , 'period_ar'));
+        $company = CompanyInfo::all() -> first();
+
+        return view('Report.incoming_list_report',compact('accounts1' , 'routes' , 'period' , 'period_ar' , 'company'));
     }
 
 
@@ -160,12 +163,14 @@ class JournalController extends Controller
             ->select('accounts_trees.id as idd','accounts_trees.code','accounts_trees.name',  'accounts_trees.parent_id' , 'accounts_trees.level',
                 DB::raw('sum(account_movements.credit) as credit'),
                 DB::raw('sum(account_movements.debit) as debit'))
-            ->groupBy('accounts_trees.id','accounts_trees.code','accounts_trees.name' )
-            ->where('accounts_trees.department',0)
-            ->get();
+            ->groupBy('accounts_trees.id','accounts_trees.code','accounts_trees.name' , 'accounts_trees.parent_id' , 'accounts_trees.level' )
+            ->where('accounts_trees.department',0) -> get();
+
+
 
 
         $accounts1 =  $accounts -> where('level' , '=' , 1) ;
+       // return $accounts1 -> get();
 
         $roles = DB::table('role_views')
             -> join('views' , 'role_views.view_id' , '=' , 'views.id')
@@ -197,8 +202,8 @@ class JournalController extends Controller
             }
         }
 
-       // return $accounts1 ;
-        return view('Report.balance_sheet_report',compact('accounts1' , 'routes' , 'period' , 'period_ar'));
+        $company = CompanyInfo::all() -> first();
+        return view('Report.balance_sheet_report',compact('accounts1' , 'routes' , 'period' , 'period_ar' , 'company'));
     }
 
 

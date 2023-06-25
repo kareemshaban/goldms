@@ -16,7 +16,8 @@ class CatchRecipt extends Model
         'amount',
         'notes',
         'date',
-        'docNumber'
+        'docNumber',
+        'payment_type'
     ];
 
 

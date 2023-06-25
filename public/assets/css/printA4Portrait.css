@@ -1,1 +1,11 @@
 @media print{@page {size: A4 portrait}}
+
+
+.c{
+
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    flex-direction: column;
+    padding: 6px;
+}

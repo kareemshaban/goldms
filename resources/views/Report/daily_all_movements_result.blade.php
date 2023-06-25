@@ -49,18 +49,45 @@
                 <div class="d-sm-flex align-items-center justify-content-between mb-4" style="padding: 8px">
 
                         <h1 class="h3 mb-0 text-primary-800 no-print">{{__('main.reports')}} / {{__('main.daily_all_movements')}}</h1>
-
+                        <button type="button" class="btn btn-info no-print" id="btnPrint">Print</button>
                 </div>
 
                 <div class="card-body px-0 pt-0 pb-2">
 
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary no-print">{{__('main.daily_all_movements')}}</h6>
-                            <br>
-                            <button type="button" class="btn btn-info no-print" id="btnPrint">Print</button>
+                        <div class="card-header py-3 " style="border:solid 1px gray">
+                            <header>
+                                <div class="container">
+                                    <div class="row" style="direction: ltr;">
+                                        <div class="col-sm c">
+                                            <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
+
+                                        <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
+                                       <br>  Vat No :   {{$company ? $company -> taxNumber : ''}}
+                                      <br>  Tel :   {{ $company ? $company -> phone : ''}}
+
+                                   </span>
+                                        </div>
+                                        <div class="col-sm c">
+                                            <label style="text-align: center; font-weight: bold"> تقرير اليومية</label>
+                                        </div>
+                                        <div class="col-sm c">
+                                       <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
+
+                                        <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
+                                       <br>  ر.ض :  {{$company ? $company -> registrationNumber : ''}}
+                                      <br>  تليفون :   {{$company ? $company -> phone : ''}}
+                                       </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </header>
+
                         </div>
+
                         <div class="card-body">
+                            <h4 class="text-center">  {{Config::get('app.locale') == 'ar' ? $period_ar : $period}} </h4>
 
                             <div class="table-responsive">
                                 <table class="table table-bordered"  width="100%" cellspacing="0">

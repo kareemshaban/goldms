@@ -20,6 +20,7 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
 
 </head>
 
@@ -47,14 +48,43 @@
                 @include('flash-message')
                 <div class="d-sm-flex align-items-center justify-content-between mb-4" style="padding: 8px">
                     <h1 class="h3 mb-0 text-primary-800">{{__('main.gold_convert_doc')}} / {{__('main.gold_convert_preview')}}</h1>
+                    <button type="button" class="btn btn-info no-print" id="btnPrint">Print</button>
+
                 </div>
 
                 <div class="card-body px-0 pt-0 pb-2">
 
                         <div class="row">
                             <div class="card shadow mb-4 col-12">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">{{__('main.gold_convert_create')}}</h6>
+                                <div class="card-header py-3 " style="border:solid 1px gray">
+                                    <header>
+                                        <div class="container">
+                                            <div class="row" style="direction: ltr;">
+                                                <div class="col-sm c">
+                                                    <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
+
+                                                <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
+                                               <br>  Vat No :   {{$company ? $company -> taxNumber : ''}}
+                                              <br>  Tel :   {{ $company ? $company -> phone : ''}}
+
+                                           </span>
+                                                </div>
+                                                <div class="col-sm c">
+                                                    <label style="text-align: center; font-weight: bold"> سند تحويل ذهب مشغول الي كسر  </label>
+                                                </div>
+                                                <div class="col-sm c">
+                                               <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
+
+                                                <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
+                                               <br>  ر.ض :  {{$company ? $company -> registrationNumber : ''}}
+                                              <br>  تليفون :   {{$company ? $company -> phone : ''}}
+                                               </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </header>
+
                                 </div>
                                 <div class="card-body">
 
@@ -104,7 +134,7 @@
                                                         <tbody id="tbody">
                                                         @foreach($details as $detail)
                                                           <td class="text-center"> {{ Config::get('app.locale') == 'ar' ? $detail -> item_ar :  $detail -> item_en}}</td>
-                                                          <td class="text-center"> <{{ Config::get('app.locale') == 'ar' ? $detail -> karat_ar :  $detail -> karat_en}}</td>
+                                                          <td class="text-center"> {{ Config::get('app.locale') == 'ar' ? $detail -> karat_ar :  $detail -> karat_en}}</td>
                                                             <td class="text-center">{{$detail -> weight}}</td>
                                                           <td class="text-center">{{$detail -> weight21}}</td>
                                                         @endforeach
@@ -155,7 +185,17 @@
 
 
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).on('click', '#btnPrint', function (event) {
+            window.print();
 
+        });
+
+    });
+
+
+</script>
 
 
 

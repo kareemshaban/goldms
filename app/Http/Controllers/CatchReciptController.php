@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Alkoumi\LaravelArabicTafqeet\Tafqeet;
+use App\Models\CompanyInfo;
 
 class CatchReciptController extends Controller
 {
@@ -80,7 +82,8 @@ class CatchReciptController extends Controller
             'amount' => $request -> amount,
             'notes' => $request -> notes ?? '',
             'date' => Carbon::parse($request -> date) ,
-            'docNumber' => $request -> docNumber
+            'docNumber' => $request -> docNumber,
+            'payment_type' => $request -> payment_type
         ]) -> id   ;
 
         $auto_accounting =  env("AUTO_ACCOUNTING", 1);
@@ -105,6 +108,12 @@ class CatchReciptController extends Controller
         echo json_encode($expense);
         exit();
 
+    }
+    public function print($id){
+        $bill = CatchRecipt::find($id);
+        $valAr = Tafqeet::inArabic($bill -> amount,'sar');
+        $company = CompanyInfo::all() -> first();
+        return view('catchs.print' , compact('bill' , 'valAr' , 'company'));
     }
 
     /**

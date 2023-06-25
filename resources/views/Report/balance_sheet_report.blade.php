@@ -48,19 +48,50 @@
             <div class="container-fluid">
                 @include('flash-message')
                 <div class="d-sm-flex align-items-center justify-content-between mb-4" style="padding: 8px">
-                    <h1 class="h3 mb-0 text-primary-800">{{__('main.accounting')}} / {{__('main.balance_sheet')}}</h1>
+                    <h1 class="h3 mb-0 text-primary-800 no-print">{{__('main.accounting')}} / {{__('main.balance_sheet')}}</h1>
+                    <button type="button" class="btn btn-info no-print" id="btnPrint">Print</button>
+
                 </div>
 
                 <div class="card-body px-0 pt-0 pb-2">
 
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">{{__('main.balance_sheet')}}</h6>
+                        <div class="card-header py-3 " style="border:solid 1px gray">
+                            <header>
+                                <div class="container">
+                                    <div class="row" style="direction: ltr;">
+                                        <div class="col-sm c">
+                                            <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
+
+                                        <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
+                                       <br>  Vat No :   {{$company ? $company -> taxNumber : ''}}
+                                      <br>  Tel :   {{ $company ? $company -> phone : ''}}
+
+                                   </span>
+                                        </div>
+                                        <div class="col-sm c">
+                                            <label style="text-align: center; font-weight: bold"> تقرير الميزانية</label>
+                                        </div>
+                                        <div class="col-sm c">
+                                       <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
+
+                                        <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
+                                       <br>  ر.ض :  {{$company ? $company -> registrationNumber : ''}}
+                                      <br>  تليفون :   {{$company ? $company -> phone : ''}}
+                                       </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </header>
+
                         </div>
-                        <div class="card-header">
-                            <h3 class="text-center">  {{Config::get('app.locale') == 'ar' ? $period_ar : $period}} </h3>
-                        </div>
+
+
+
                         <div class="card-body">
+                            <h4 class="text-center">  {{Config::get('app.locale') == 'ar' ? $period_ar : $period}} </h4>
+
                             <div class="table-responsive">
 
                                 <table  class="table table-bordered"  width="100%" cellspacing="0">
@@ -214,6 +245,11 @@
 <script type="text/javascript">
     let id = 0;
     $(document).ready(function () {
+
+        $(document).on('click', '#btnPrint', function (event) {
+            printPage();
+
+        });
         id = 0;
         $(document).on('click', '#createButton', function (event) {
             console.log('clicked');
@@ -267,6 +303,7 @@
                 timeout: 8000
             })
         });
+
 
 
 
@@ -360,7 +397,26 @@
             }
         });
     }
+    function printPage(){
+        var css = '@page { size: landscape; }',
+            head = document.head || document.getElementsByTagName('head')[0],
+            style = document.createElement('style');
+
+        style.type = 'text/css';
+        style.media = 'print';
+
+        if (style.styleSheet){
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
+
+        head.appendChild(style);
+
+        window.print();
+    }
 </script>
+
 
 
 <script src="{{asset('assets/vendor/jquery/jquery.min.js')}}"></script>

@@ -337,4 +337,6 @@ return [
     'sales_total_report' => 'Total Sales Report',
     'purchase_total_report' => 'Total Purchase Report',
     'purchase_sales_total_report' => 'Total Daily Sales & Purchase Report',
+    'movement_report' => 'Movement Report' ,
+
 ];

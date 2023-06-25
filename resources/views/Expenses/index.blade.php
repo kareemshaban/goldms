@@ -79,7 +79,7 @@
                                                 <td class="text-center">{{$bill -> date}}</td>
                                                 <td class="text-center">{{$bill -> docNumber}}</td>
                                                 <td class="text-center">{{$bill -> from_account_name }}</td>
-                                                <td class="text-center">{{$bill -> from_account_name }}</td>
+                                                <td class="text-center">{{$bill -> to_account_name }}</td>
                                                 <td class="text-center">{{$bill -> amount}}</td>
                                                 <td class="text-center">
                                                     <button type="button" class="btn btn-labeled btn-secondary editBtn" value="{{$bill -> id}}">
@@ -197,6 +197,17 @@
 
                             </div>
                         </div>
+                        <div class="col-6 " >
+                            <div class="form-group">
+                                <label>{{ __('main.payment_method') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                <select class="form-control" name="payment_type" id="payment_type">
+                                    <option value="0"> {{__('main.cash')}} </option>
+                                    <option value="1"> {{__('main.visa')}} </option>
+
+                                </select>
+
+                            </div>
+                        </div>
 
 
                     </div>
@@ -214,6 +225,9 @@
                         <div class="col-6" style="display: block; margin: 20px auto; text-align: center;">
                             <button type="submit" class="btn btn-labeled btn-primary" id="submitBtn" >
                                 {{__('main.save_btn')}}</button>
+
+                                <button type="button" class="btn btn-labeled btn-secondary no-print" id="printtBtn" >  print</button>
+
                         </div>
                     </div>
                 </form>
@@ -299,7 +313,7 @@
                     $('#createModal').modal("show");
                     $(".modal-body #date").val(today );
                     $(".modal-body #notes").val("");
-                    $(".modal-body #docNumber").val(response);
+                    $(".modal-body #docNumber").val(result);
 
                     $(".modal-body #id").val( 0 );
                     $(".modal-body #type_id").val(0);
@@ -307,9 +321,10 @@
 
                     $(".modal-body #date").attr('readOnly' , false);
                     $(".modal-body #amount").attr('readOnly' , false);
-                    $(".modal-body #type_id").attr('disabled' , false);
+                    $(".modal-body #payment_type").attr('readOnly' , false);
                     $(".modal-body #notes").attr('disabled' , false);
                     $(".modal-body #submitBtn").show();
+                    $(".modal-body #printtBtn").hide();
 
                 },
             });
@@ -350,14 +365,18 @@
                                 $(".modal-body #to_account").val(response.to_account);
                                 $(".modal-body #amount").val(response.amount);
                                 $(".modal-body #client").val(response.client);
+                                $(".modal-body #payment_type").val(response.payment_type);
+
 
                                 $(".modal-body #date").attr('readOnly' , true);
-                                $(".modal-body #amount").attr('readOnly' , true);
+                                $(".modal-body #amount").attr('disabled' , true);
+                                $(".modal-body #payment_type").attr('readOnly' , true);
                                 $(".modal-body #from_account").attr('disabled' , true);
                                 $(".modal-body #to_account").attr('disabled' , true);
                                 $(".modal-body #notes").attr('disabled' , true);
                                 $(".modal-body #client").attr('disabled' , true);
                                 $(".modal-body #submitBtn").hide();
+                                $(".modal-body #printtBtn").show();
 
                             },
                             complete: function() {
@@ -411,7 +430,13 @@
             id = 0 ;
         });
 
-
+        $(document).on('click' , '#printtBtn' , function (event) {
+            let url = "" ;
+            let val = document.getElementById('id').value    ;
+            url   = "{{ route('printExpense', ':id') }}";
+            url = url.replace(':id', val);
+            document.location.href = url;
+        });
 
     });
     function confirmDelete(){
@@ -419,52 +444,9 @@
         url = url.replace(':id', id);
         document.location.href=url;
     }
-    function EditModal(id){
-        $.ajax({
-            type:'get',
-            url:'getCategory' + '/' + id,
-            dataType: 'json',
-
-            success:function(response){
-                console.log(response);
-                if(response){
-                    let href = $(this).attr('data-attr');
-                    $.ajax({
-                        url: href,
-                        beforeSend: function() {
-                            $('#loader').show();
-                        },
-                        // return the result
-                        success: function(result) {
-                            $('#createModal').modal("show");
-                            var img =  '../images/Category/' + response.image_url ;
-                            $(".modal-body #profile-img-tag").attr('src' , img );
-                            $(".modal-body #name").val( response.name );
-                            $(".modal-body #code").val( response.code );
-                            $(".modal-body #slug").val(response.slug);
-                            $(".modal-body #description").val(response.description);
-                            $(".modal-body #parent_id").val(response.parent_id);
-                            $(".modal-body #id").val( response.id );
-                            $(".modal-body #isGold").prop('checked' , response.isGold);
 
 
-                        },
-                        complete: function() {
-                            $('#loader').hide();
-                        },
-                        error: function(jqXHR, testStatus, error) {
-                            console.log(error);
-                            alert("Page " + href + " cannot open. Error:" + error);
-                            $('#loader').hide();
-                        },
-                        timeout: 8000
-                    })
-                } else {
 
-                }
-            }
-        });
-    }
 </script>
 <script src="{{asset('assets/vendor/jquery/jquery.min.js')}}"></script>
 <script src="{{asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>

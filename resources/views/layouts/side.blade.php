@@ -465,6 +465,9 @@
                    <a class="collapse-item @if($subSlag == 1444) active @endif" hidden
                       href="{{route('purchase_sales_total_report')}}">{{__('main.purchase_sales_total_report')}}</a>
 
+                      <a class="collapse-item @if($subSlag == 1445) active @endif"
+                      href="{{route('movement_report')}}">{{__('main.movement_report')}}</a>
+
 
 
 
