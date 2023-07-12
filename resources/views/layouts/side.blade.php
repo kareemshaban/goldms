@@ -321,7 +321,12 @@
                    @endif
                    @if( in_array('journals' , $routes )    )
                <a class="collapse-item @if($subSlag == 163) active @endif"
-                  href="{{route('journals')}}">{{__('main.journals')}}</a>
+                  href="{{route('journals' , 1)}}">{{__('main.journals')}}</a>
+
+
+                       <a class="collapse-item @if($subSlag == 165) active @endif"
+                          href="{{route('journals' , 0)}}">{{__('main.manual_journals')}}</a>
+
                    @endif
                    @if( in_array('manual_journal' , $routes )    )
                <a class="collapse-item @if($subSlag == 164) active @endif"
@@ -335,8 +340,8 @@
    </li>
     @endif
 
-    @if( in_array('users' , $routes )    ||in_array('roles' , $routes )    || in_array('roleViews' , $routes )  )
-
+{{--    @if( in_array('users' , $routes )    ||in_array('roles' , $routes )    || in_array('roleViews' , $routes )  )--}}
+   @if(false)
    <hr class="sidebar-divider d-none d-md-block">
    <li class="nav-item @if($slag == 17) active @endif"
        @if(Config::get('app.locale') == 'ar') style="direction: rtl" @endif>
@@ -426,10 +431,15 @@
                <a class="collapse-item @if($subSlag == 143) active @endif"
                   href="{{route('sales_report')}}">{{__('main.sales_report')}}</a>
                    @endif
+                   <a class="collapse-item @if($subSlag == 1442) active @endif"
+                      href="{{route('sales_total_report')}}">{{__('main.sales_total_report')}}</a>
                    @if( in_array('purchase_report' , $routes ) )
                <a class="collapse-item @if($subSlag == 144) active @endif"
                   href="{{route('purchase_report')}}">{{__('main.purchase_report')}}</a>
                    @endif
+
+                   <a class="collapse-item @if($subSlag == 1443) active @endif"
+                      href="{{route('purchase_total_report')}}">{{__('main.purchase_total_report')}}</a>
 
                    @if(  in_array('vendor_account' , $routes ) )
                <a class="collapse-item @if($subSlag == 145) active @endif"
@@ -456,17 +466,18 @@
                        <a class="collapse-item @if($subSlag == 1441) active @endif"
                           href="{{route('bank_movement_report')}}">{{__('main.bank_movement_report')}}</a>
 
-                   <a class="collapse-item @if($subSlag == 1442) active @endif"
-                      href="{{route('sales_total_report')}}">{{__('main.sales_total_report')}}</a>
 
-                   <a class="collapse-item @if($subSlag == 1443) active @endif"
-                      href="{{route('purchase_total_report')}}">{{__('main.purchase_total_report')}}</a>
+
+
 
                    <a class="collapse-item @if($subSlag == 1444) active @endif" hidden
                       href="{{route('purchase_sales_total_report')}}">{{__('main.purchase_sales_total_report')}}</a>
 
                       <a class="collapse-item @if($subSlag == 1445) active @endif"
                       href="{{route('movement_report')}}">{{__('main.movement_report')}}</a>
+
+
+
 
 
 
@@ -488,6 +499,9 @@
                           href="{{route('balance_sheet')}}">{{__('main.balance_sheet')}}</a>
 
                    @endif
+
+                   <a class="collapse-item @if($subSlag == 1446) active @endif"
+                      href="{{route('account_movement_report')}}">{{__('main.account_movement_report')}}</a>
 
 
 

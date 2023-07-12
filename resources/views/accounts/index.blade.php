@@ -24,7 +24,46 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
+    <style>
+        ul, #myUL {
+            list-style-type: none;
+        }
 
+        /* Remove margins and padding from the parent ul */
+        #myUL {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Style the caret/arrow */
+        .caret {
+            cursor: pointer;
+            user-select: none; /* Prevent text selection */
+        }
+
+        /* Create the caret/arrow with a unicode, and style it */
+        .caret::before {
+            content: "\25B6";
+            color: black;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+        .caret-down::before {
+            transform: rotate(90deg);
+        }
+
+        /* Hide the nested list */
+        .nested {
+            display: none;
+        }
+
+        /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+        .active {
+            display: block;
+        }
+    </style>
 </head>
 
 <body id="page-top" @if(Config::get('app.locale') == 'ar') style="direction: rtl" @endif>
@@ -65,54 +104,136 @@
                             <h6 class="m-0 font-weight-bold text-primary">{{__('main.accounts')}}</h6>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">
-                                            #
-                                        </th>
-                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.code')}}</th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.name')}}</th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.account_type')}} </th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.parent_account')}} </th>
-                                        <th class="text-end text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.actions')}}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($accounts as $unit)
-                                        <tr>
-                                            <td class="text-center">{{$unit->id}}</td>
-                                            <td class="text-center">{{$unit->code}}</td>
-                                            <td class="text-center">{{$unit->name}}</td>
-                                            <td class="text-center">
-                                               @if($unit->type == 0)
-                                                {{__('main.Root')}}
-                                                @elseif($unit->type == 1)
-                                                {{__('main.General')}}
-                                                @elseif($unit->type == 2)
-                                                    {{__('main.Branch')}}
-                                                @elseif($unit->type == 3)
-                                                    {{__('main.Branch_Ledger')}}
-                                                @endif
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                            <thead>
+                                            <tr>
+                                                <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">
+                                                    #
+                                                </th>
+                                                <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.code')}}</th>
+                                                <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.name')}}</th>
+                                                <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.account_type')}} </th>
+                                                <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.parent_account')}} </th>
+                                                <th class="text-end text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.actions')}}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($accounts as $unit)
+                                                <tr>
+                                                    <td class="text-center">{{$unit->id}}</td>
+                                                    <td class="text-center">{{$unit->code}}</td>
+                                                    <td class="text-center">{{$unit->name}}</td>
+                                                    <td class="text-center">
+                                                        @if($unit->type == 0)
+                                                            {{__('main.Root')}}
+                                                        @elseif($unit->type == 1)
+                                                            {{__('main.General')}}
+                                                        @elseif($unit->type == 2)
+                                                            {{__('main.Branch')}}
+                                                        @elseif($unit->type == 3)
+                                                            {{__('main.Branch_Ledger')}}
+                                                        @endif
 
 
-                                            </td>
-                                            <td class="text-center">{{$unit->parent_code}}</td>
-                                            <td class="text-center">
-                                                <a href="{{route('edit_account' , $unit -> id)}}">
-                                                    <button type="button" class="btn btn-labeled btn-secondary ">
-                                                        <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-pen"></i></span>{{__('main.edit')}}</button>
-                                                </a>
-                                                <button type="button" class="btn btn-labeled btn-danger deleteBtn "  id="{{$unit->id}}">
-                                                    <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-trash"></i></span>{{__('main.delete')}}</button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
+                                                    </td>
+                                                    <td class="text-center">{{$unit->parent_code}}</td>
+                                                    <td class="text-center">
+                                                        <a href="{{route('edit_account' , $unit -> id)}}">
+                                                            <button type="button" class="btn btn-labeled btn-secondary ">
+                                                                <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-pen"></i></span>{{__('main.edit')}}</button>
+                                                        </a>
+                                                        <button type="button" class="btn btn-labeled btn-danger deleteBtn "  id="{{$unit->id}}">
+                                                            <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-trash"></i></span>{{__('main.delete')}}</button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
 
-                                </table>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <ul id="myUL">
+                                        @foreach($roots as $root)
+                                            <li>
+                                                <span class="caret">{{$root -> name . ' --- ' . $root -> code}}</span>
+                                                <?php $childs = [];  ?>
+                                                <?php $childs2 = [];  ?>
+                                                <?php $childs3 = [];  ?>
+                                                <?php $childs4 = [];  ?>
+                                                <?php $childs5 = [];  ?>
+                                                <?php $childs = \App\Models\AccountsTree::where('parent_id' , '=' , $root -> id ) -> get()   ?>
+                                                <ul class="nested">
+                                                    @foreach($childs as $child)
+                                                        <?php $childs2 = \App\Models\AccountsTree::where('parent_id' , '=' , $child -> id ) -> get()   ?>
+                                                    @if( count($childs2) > 0 )
+                                                                <li>
+                                                                    <span class="caret"> {{$child -> name . ' --- ' . $child -> code}}  </span>
+                                                                    <ul class="nested">
+                                                                        @foreach($childs2 as $child2)
+                                                                            <?php $childs3 = \App\Models\AccountsTree::where('parent_id' , '=' , $child2 -> id ) -> get()   ?>
+                                                                                @if( count($childs3) > 0 )
+                                                                               <li>
+                                                                                   <span class="caret"> {{$child2 -> name . ' --- ' . $child2 -> code}}  </span>
+                                                                                   <ul class="nested">
+                                                                                       @foreach($childs3 as $child3)
+                                                                                           <?php $childs4 = \App\Models\AccountsTree::where('parent_id' , '=' , $child3 -> id ) -> get()   ?>
+                                                                                               @if( count($childs4) > 0 )
+                                                                                                   <li>
+                                                                                                       <span class="caret"> {{$child3 -> name . ' --- ' . $child3 -> code}}  </span>
+                                                                                                       <ul class="nested">
+                                                                                                           @foreach($childs4 as $child4)
+                                                                                                       <?php $childs5 = \App\Models\AccountsTree::where('parent_id' , '=' , $child4 -> id ) -> get()   ?>
+                                                                                                           @if( count($childs5) > 0 )
+                                                                                                               <li>
+                                                                                                                   <span class="caret"> {{$child4 -> name . ' --- ' . $child4 -> code}}  </span>
+
+                                                                                                               </li>
+                                                                                                               @else
+                                                                                                               <li> {{$child4 -> name . ' --- ' . $child4 -> code}}
+
+                                                                                                               </li>
+                                                                                                           @endif
+                                                                                                           @endforeach
+                                                                                                       </ul>
+                                                                                                   </li>
+                                                                                                   @else
+                                                                                                   <li> {{$child3 -> name . ' --- ' . $child3 -> code}}</li>
+                                                                                               @endif
+                                                                                       @endforeach
+                                                                                   </ul>
+
+                                                                               </li>
+                                                                                @else
+                                                                                    <li> {{$child2 -> name . ' --- ' . $child2 -> code}}</li>
+                                                                                @endif
+
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </li>
+                                                        @else
+                                                                <li> {{$child -> name . ' --- ' . $child -> code}}</li>
+                                                            @endif
+
+                                                    @endforeach
+
+                                                </ul>
+
+                                            </li>
+
+
+
+                                        @endforeach
+
+
+
+                                    </ul>
+                                </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -194,6 +315,16 @@
 <script type="text/javascript">
     let id = 0;
     $(document).ready(function () {
+        var toggler = document.getElementsByClassName("caret");
+        var i;
+
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function() {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+            });
+        }
+
         id = 0;
         $(document).on('click', '#createButton', function (event) {
             console.log('clicked');

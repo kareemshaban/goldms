@@ -271,7 +271,7 @@ class PosController extends WarehouseController
                     'gram_tax' => $request -> item_tax[$i],
                     'net_money'=> $request -> net_money[$i],
                 ];
-                $total += $request -> net_money[$i] ;
+                $total += ($request -> net_money[$i] - $request -> item_tax[$i]);
                 $items[] = $item ;
             }
 
@@ -353,7 +353,7 @@ class PosController extends WarehouseController
                     'net_money' => $request -> net_money_old[$i],
                 ];
                 $total21_gold += $request -> weight21_old[$i];
-                $total_money += $request -> net_money_old[$i];
+                $total_money += ($request -> net_money_old[$i] - $request -> gram_tax_old[$i]);
                 $items[] = $item ;
             }
 
@@ -771,7 +771,8 @@ class PosController extends WarehouseController
     public function workReturnPreview($id){
         $bill = DB::table('exit_works')
             -> leftJoin('companies' , 'companies.id' , '=' , 'exit_works.client_id')
-            -> select('exit_works.*' , 'companies.name as vendor_name' , 'companies.vat_no as vendor_vat_no')
+            -> Join('exit_works as original' , 'exit_works.id' , '=' , 'original.returned_bill_id')
+            -> select('exit_works.*' , 'companies.name as vendor_name' , 'companies.vat_no as vendor_vat_no' , 'original.bill_number as ref_number')
             -> where('exit_works.id' , '=' , $id)
             -> get() -> first();
 
@@ -848,7 +849,8 @@ class PosController extends WarehouseController
     public function workReturnPrint($id){
         $bill = DB::table('exit_works')
             -> join('companies' , 'companies.id' , '=' , 'exit_works.client_id')
-            -> select('exit_works.*' , 'companies.name as vendor_name' , 'companies.phone as vendor_phone' , 'companies.vat_no as vendor_vat_no' )
+            -> Join('exit_works as original' , 'exit_works.id' , '=' , 'original.returned_bill_id')
+            -> select('exit_works.*' , 'companies.name as vendor_name' , 'companies.vat_no as vendor_vat_no' , 'original.bill_number as ref_number')
             -> where('exit_works.id' , '=' , $id)
             -> get() -> first();
 

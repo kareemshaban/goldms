@@ -342,4 +342,8 @@ return [
     'purchase_total_report' => 'تقرير مشتريات إجمالي',
     'purchase_sales_total_report' => 'تقرير مبيعات ومشتريات يومي',
     'movement_report' => 'تقرير الحركة' ,
+    'ref_number' => 'الرقم المرجعي',
+    'manual_journals' => 'القيود اليدوية',
+    'account_movement_report' => 'تقرير حركة حساب',
+    'accounts_list' => 'قائمة الحسابات',
 ];

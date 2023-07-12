@@ -9,6 +9,8 @@ use App\Models\Journal;
 use App\Models\Payment;
 use App\Models\Pricing;
 use App\Models\Product;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -22,8 +24,15 @@ class AccountsTreeController extends Controller
      */
     public function index()
     {
-        $accounts = AccountsTree::all();
-        $pricings = Pricing::all();
+        $top_level = AccountsTree::where('level' , '>' , 0) -> orderBy('level' , 'desc') -> first() -> level;
+
+        $accounts = AccountsTree::where('level' , '>' , 0) -> orderBy('level') -> get();
+        $roots = AccountsTree::where('level' , '=' , 1 ) -> orderBy('id') -> get();
+
+
+
+
+
         $roles = DB::table('role_views')
             -> join('views' , 'role_views.view_id' , '=' , 'views.id')
             ->join('roles' , 'role_views.role_id' , '=' , 'roles.id')
@@ -38,7 +47,32 @@ class AccountsTreeController extends Controller
         foreach ($roles as $role){
             array_push($routes , $role -> route);
         }
-        return view('accounts.index',compact('accounts' , 'routes'));
+        return view('accounts.index',compact('accounts' , 'routes' , 'top_level' , 'roots'));
+    }
+    public function index2()
+    {
+        $roles = DB::table('role_views')
+            -> join('views' , 'role_views.view_id' , '=' , 'views.id')
+            ->join('roles' , 'role_views.role_id' , '=' , 'roles.id')
+            ->select('role_views.*' , 'views.name_ar as view_name_ar' ,  'views.name_en as view_name_en' ,
+                'roles.name_ar as role_name_ar' ,  'roles.name_en as role_name_en' , 'views.route')
+            ->where('role_views.role_id' , '=' , Auth::user() -> role_id)
+            ->where('role_views.all_auth' , '=' , 1)
+            -> get();
+        $routes = [] ;
+        foreach ($roles as $role){
+            array_push($routes , $role -> route);
+        }
+
+        $accounts = AccountsTree::where('level' , '=' , 1) -> get();
+        foreach ($accounts as $account){
+            $childs = AccountsTree::where('parent_id' , '=' , $account -> id) -> get();
+            $account -> childs = $childs ;
+        }
+
+
+
+        return view('accounts.tree',compact('accounts' , 'routes'));
     }
 
     /**
@@ -206,7 +240,7 @@ class AccountsTreeController extends Controller
     }
 
 
-    public function journals(){
+    public function journals($type){
         $journals = DB::table('journals')
             ->join('journal_details','journals.id','=','journal_details.journal_id')
             ->select('journals.id','journals.date','journals.basedon_no',
@@ -237,8 +271,60 @@ class AccountsTreeController extends Controller
             array_push($routes , $role -> route);
         }
 
-        return view('accounts.journals',compact('journals' , 'routes'));
+        return view('accounts.journals',compact('journals' , 'routes' , 'type'));
     }
+
+    public function journals_search(Request $request){
+
+        $journals = DB::table('journals')
+            ->join('journal_details','journals.id','=','journal_details.journal_id')
+            ->select('journals.id','journals.date','journals.basedon_no',
+                'journals.basedon_id',
+                'journals.baseon_text',
+                DB::raw('SUM(CASE WHEN journal_details.notes = "" THEN journal_details.credit END) credit_total'),
+                DB::raw('SUM(CASE WHEN journal_details.notes = "" THEN journal_details.debit END) debit_total'),
+                DB::raw('SUM(CASE WHEN journal_details.notes != "" THEN journal_details.credit END) credit_totalg'),
+                DB::raw('SUM(CASE WHEN journal_details.notes != "" THEN journal_details.debit END) debit_totalg'),
+            )
+            ->groupBy('journals.id','journals.date','journals.basedon_no',
+                'journals.basedon_id',
+                'journals.baseon_text')
+            ->orderByDesc('journals.id');
+
+
+        if($request -> has('isStartDate')) $journals = $journals -> where('date' , '>=' , Carbon::parse($request -> StartDate) );
+        if($request -> has('isEndDate'))   $journals = $journals -> where('date' , '<=' , Carbon::parse($request -> EndDate) -> addDay());
+        if($request -> has('isCode')) $journals = $journals -> where('journals.id' , '=' , (int)$request -> code );
+
+
+
+
+
+        $journals =  $journals -> get() ;
+
+
+        $roles = DB::table('role_views')
+            -> join('views' , 'role_views.view_id' , '=' , 'views.id')
+            ->join('roles' , 'role_views.role_id' , '=' , 'roles.id')
+            ->select('role_views.*' , 'views.name_ar as view_name_ar' ,  'views.name_en as view_name_en' ,
+                'roles.name_ar as role_name_ar' ,  'roles.name_en as role_name_en' , 'views.route')
+            ->where('role_views.role_id' , '=' , Auth::user() -> role_id)
+            ->where('role_views.all_auth' , '=' , 1)
+            -> get();
+
+
+        $routes = [] ;
+        foreach ($roles as $role){
+            array_push($routes , $role -> route);
+        }
+
+        $type = $request -> type ;
+
+        return view('accounts.journals',compact('journals' , 'routes' , 'type'));
+    }
+
+
+
 
 
     public function previewJournal($id){

@@ -56,9 +56,8 @@
                     <div class="card shadow mb-4 ">
                         <div class="card-header py-3 " style="border:solid 1px gray">
                             <header>
-                                <div class="container">
-                                    <div class="row" style="direction: ltr;">
-                                        <div class="col-sm c">
+                                <div class="row" style="direction: ltr;">
+                                    <div class="col-4 c">
                                             <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
 
                                         <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
@@ -66,18 +65,17 @@
                                       <br>  Tel :   {{ $company ? $company -> phone : ''}}
 
                                    </span>
-                                        </div>
-                                        <div class="col-sm c">
-                                            <label style="text-align: center; font-weight: bold"> تقرير  مبيعات إجمالي</label>
-                                        </div>
-                                        <div class="col-sm c">
+                                    </div>
+                                    <div class="col-4 c">
+                                        <label style="text-align: center; font-weight: bold"> تقرير  مبيعات إجمالي</label>
+                                    </div>
+                                    <div class="col-4 c">
                                        <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
 
                                         <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
                                        <br>  ر.ض :  {{$company ? $company -> registrationNumber : ''}}
                                       <br>  تليفون :   {{$company ? $company -> phone : ''}}
                                        </span>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -96,6 +94,7 @@
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.document_type')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.date')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.bill_no')}}</th>
+                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.client')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.total_weight21')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.total_money')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.discount')}}</th>
@@ -116,7 +115,14 @@
                                             <td class="text-center">{{$loop -> index + 1}}</td>
                                             <td class="text-center">{{$item -> type == 0 ? 'فاتورة مبيعات ذهب كسر' : 'فاتورة مبيعات ذهب مشغول'}}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($item -> date) -> format('d-m-Y')  }}</td>
-                                            <td class="text-center">{{$item -> bill_number}}</td>
+                                            <td class="text-center">
+                                                @if($item -> type == 1 )
+                                                    <a href="{{route('workExitPreview' , $item -> id)}}" target="_blank">{{$item -> bill_number}}</a>
+                                                @else
+                                                    <a href="{{route('oldExitPreview' , $item -> id)}}" target="_blank">{{$item -> bill_number}}</a>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">{{$item -> client}}</td>
                                             <td class="text-center">{{$item -> total21_gold}}</td>
                                             <td class="text-center">{{$item -> net_money - $item -> tax}}</td>
                                             <td class="text-center">{{$item -> discount}}</td>
@@ -133,7 +139,7 @@
                                     @endforeach
 
                                     <tr>
-                                        <td class="text-center" colspan="4"> الإجمالي</td>
+                                        <td class="text-center" colspan="5"> الإجمالي</td>
                                         <td class="text-center">{{$sum_weight}}</td>
                                         <td class="text-center">{{$sum_total}}</td>
                                         <td class="text-center">{{$sum_discount}}</td>
@@ -145,55 +151,55 @@
 
                                 </table>
 
-{{--                                <h2 class="text-center">الإجماليات حسب العيار</h2>--}}
-{{--                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">--}}
-{{--                                    <thead>--}}
-{{--                                    <tr>--}}
-{{--                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">--}}
-{{--                                            #--}}
-{{--                                        </th>--}}
-{{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.karat')}} </th>--}}
-{{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.quantity')}} </th>--}}
-{{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.weight')}}</th>--}}
-{{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.total_without_tax')}} </th>--}}
-{{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.gram_tax')}} </th>--}}
-{{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.made_Value')}} </th>--}}
-{{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.net_money')}} </th>--}}
+                                {{--                                <h2 class="text-center">الإجماليات حسب العيار</h2>--}}
+                                {{--                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">--}}
+                                {{--                                    <thead>--}}
+                                {{--                                    <tr>--}}
+                                {{--                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">--}}
+                                {{--                                            #--}}
+                                {{--                                        </th>--}}
+                                {{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.karat')}} </th>--}}
+                                {{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.quantity')}} </th>--}}
+                                {{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.weight')}}</th>--}}
+                                {{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.total_without_tax')}} </th>--}}
+                                {{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.gram_tax')}} </th>--}}
+                                {{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.made_Value')}} </th>--}}
+                                {{--                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.net_money')}} </th>--}}
 
-{{--                                    </tr>--}}
-{{--                                    </thead>--}}
-{{--                                    <tbody>--}}
+                                {{--                                    </tr>--}}
+                                {{--                                    </thead>--}}
+                                {{--                                    <tbody>--}}
 
-{{--                                    @foreach(Config::get('app.locale') == 'ar' ? $grouped_ar : $grouped_en as $group => $items)--}}
-{{--                                        <?php $sum_weight_group = 0 ?>--}}
-{{--                                        <?php $sum_total_group = 0 ?>--}}
-{{--                                        <?php $count = 0 ?>--}}
-{{--                                        <?php $sum_tax_g = 0 ?>--}}
-{{--                                        <?php $sum_made_g = 0 ?>--}}
-{{--                                        <?php $sum_net_g = 0 ?>--}}
-{{--                                        @foreach($items as $item)--}}
-{{--                                        <?php $sum_weight_group += $item -> weight ?>--}}
-{{--                                        <?php $sum_total_group += ($item -> weight * $item -> gram_price) ?>--}}
-{{--                                        <?php $count += 1 ?>--}}
-{{--                                        <?php $sum_tax_g += $item -> gram_tax ?>--}}
-{{--                                        <?php $sum_made_g += $item -> gram_manufacture ?>--}}
-{{--                                        <?php $sum_net_g += $item -> net_money ?>--}}
-{{--                                        @endforeach--}}
-{{--                                        <tr>--}}
-{{--                                          <td class="text-center">{{$loop -> index + 1}}</td>--}}
-{{--                                          <td class="text-center">{{$group}}</td>--}}
-{{--                                            <td class="text-center"> {{$count}} </td>--}}
-{{--                                            <td class="text-center"> {{$sum_weight_group}} </td>--}}
-{{--                                            <td class="text-center"> {{$sum_total_group}}</td>--}}
-{{--                                            <td class="text-center"> {{$sum_tax_g}}</td>--}}
-{{--                                            <td class="text-center"> {{$sum_made_g}}</td>--}}
-{{--                                            <td class="text-center">{{$sum_net_g}} </td>--}}
-{{--                                        </tr>--}}
-{{--                                    @endforeach--}}
+                                {{--                                    @foreach(Config::get('app.locale') == 'ar' ? $grouped_ar : $grouped_en as $group => $items)--}}
+                                {{--                                        <?php $sum_weight_group = 0 ?>--}}
+                                {{--                                        <?php $sum_total_group = 0 ?>--}}
+                                {{--                                        <?php $count = 0 ?>--}}
+                                {{--                                        <?php $sum_tax_g = 0 ?>--}}
+                                {{--                                        <?php $sum_made_g = 0 ?>--}}
+                                {{--                                        <?php $sum_net_g = 0 ?>--}}
+                                {{--                                        @foreach($items as $item)--}}
+                                {{--                                        <?php $sum_weight_group += $item -> weight ?>--}}
+                                {{--                                        <?php $sum_total_group += ($item -> weight * $item -> gram_price) ?>--}}
+                                {{--                                        <?php $count += 1 ?>--}}
+                                {{--                                        <?php $sum_tax_g += $item -> gram_tax ?>--}}
+                                {{--                                        <?php $sum_made_g += $item -> gram_manufacture ?>--}}
+                                {{--                                        <?php $sum_net_g += $item -> net_money ?>--}}
+                                {{--                                        @endforeach--}}
+                                {{--                                        <tr>--}}
+                                {{--                                          <td class="text-center">{{$loop -> index + 1}}</td>--}}
+                                {{--                                          <td class="text-center">{{$group}}</td>--}}
+                                {{--                                            <td class="text-center"> {{$count}} </td>--}}
+                                {{--                                            <td class="text-center"> {{$sum_weight_group}} </td>--}}
+                                {{--                                            <td class="text-center"> {{$sum_total_group}}</td>--}}
+                                {{--                                            <td class="text-center"> {{$sum_tax_g}}</td>--}}
+                                {{--                                            <td class="text-center"> {{$sum_made_g}}</td>--}}
+                                {{--                                            <td class="text-center">{{$sum_net_g}} </td>--}}
+                                {{--                                        </tr>--}}
+                                {{--                                    @endforeach--}}
 
-{{--                                    </tbody>--}}
+                                {{--                                    </tbody>--}}
 
-{{--                                </table>--}}
+                                {{--                                </table>--}}
 
 
                             </div>

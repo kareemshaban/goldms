@@ -59,9 +59,8 @@
                     <div class="card shadow mb-4 ">
                         <div class="card-header py-3 " style="border:solid 1px gray">
                             <header>
-                                <div class="container">
-                                    <div class="row" style="direction: ltr;">
-                                        <div class="col-sm c">
+                                <div class="row" style="direction: ltr;">
+                                    <div class="col-4 c">
                                             <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
 
                                         <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
@@ -69,18 +68,17 @@
                                       <br>  Tel :   {{ $company ? $company -> phone : ''}}
 
                                    </span>
-                                        </div>
-                                        <div class="col-sm c">
-                                            <label style="text-align: center; font-weight: bold"> تقرير  مبيعات تفصيلي</label>
-                                        </div>
-                                        <div class="col-sm c">
+                                    </div>
+                                    <div class="col-4 c">
+                                        <label style="text-align: center; font-weight: bold"> تقرير  مبيعات تفصيلي</label>
+                                    </div>
+                                    <div class="col-4 c">
                                        <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
 
                                         <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
                                        <br>  ر.ض :  {{$company ? $company -> registrationNumber : ''}}
                                       <br>  تليفون :   {{$company ? $company -> phone : ''}}
                                        </span>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -100,6 +98,7 @@
                                         </th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.date')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.bill_no')}}</th>
+                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.client')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.item')}}</th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.karat')}} </th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7"> {{__('main.weight')}} </th>
@@ -121,18 +120,26 @@
                                         <tr>
                                             <td class="text-center">{{$loop -> index + 1}}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($item -> date) -> format('d-m-Y')  }}</td>
-                                            <td class="text-center">{{$item -> bill_number}}</td>
+                                            <td class="text-center">
+                                                @if($item -> type == 1 )
+                                                    <a href="{{route('workExitPreview' , $item -> id)}}" target="_blank">{{$item -> bill_number}}</a>
+                                                @else
+                                                    <a href="{{route('oldExitPreview' , $item -> id)}}" target="_blank">{{$item -> bill_number}}</a>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">{{$item -> client}}</td>
+
                                             <td class="text-center">{{Config::get('app.locale') == 'ar' ? $item -> item_name_ar : $item -> item_name_en }}</td>
                                             <td class="text-center">{{ (Config::get('app.locale') == 'ar' ? $item -> karat_name_ar : $item -> karat_name_en)  }}</td>
                                             <td class="text-center">{{$item -> weight}}</td>
                                             <td class="text-center">{{$item -> gram_price}}</td>
-                                            <td class="text-center">{{ $item -> weight * $item -> gram_price   }}</td>
-                                            <td class="text-center">{{$item -> gram_tax}}</td>
+                                            <td class="text-center">{{ $item -> net_money / 1.15  }}</td>
+                                            <td class="text-center">{{$item -> net_money - ($item -> net_money / 1.15)}}</td>
                                             <td class="text-center">{{$item -> net_money}}</td>
 
                                         </tr>
                                         <?php $sum_weight += $item -> weight ?>
-                                        <?php $sum_total += ($item -> weight * $item -> gram_price) ?>
+                                        <?php $sum_total += ($item -> net_money -  $item -> gram_tax ) ?>
                                         <?php $sum_tax += $item -> gram_tax ?>
                                         <?php $sum_made += $item -> gram_manufacture ?>
                                         <?php $sum_net += $item -> net_money ?>
@@ -140,6 +147,7 @@
                                     @endforeach
                                     <tr style="background: antiquewhite; font-weight: bold">
                                         <td class="text-center">الإجمالي</td>
+                                        <td class="text-center"></td>
                                         <td class="text-center"></td>
                                         <td class="text-center"></td>
                                         <td class="text-center"></td>
@@ -182,16 +190,16 @@
                                         <?php $sum_made_g = 0 ?>
                                         <?php $sum_net_g = 0 ?>
                                         @foreach($items as $item)
-                                        <?php $sum_weight_group += $item -> weight ?>
-                                        <?php $sum_total_group += ($item -> weight * $item -> gram_price) ?>
-                                        <?php $count += 1 ?>
-                                        <?php $sum_tax_g += $item -> gram_tax ?>
-                                        <?php $sum_made_g += $item -> gram_manufacture ?>
-                                        <?php $sum_net_g += $item -> net_money ?>
+                                            <?php $sum_weight_group += $item -> weight ?>
+                                            <?php $sum_total_group += ($item -> weight * $item -> gram_price) ?>
+                                            <?php $count += 1 ?>
+                                            <?php $sum_tax_g += $item -> gram_tax ?>
+                                            <?php $sum_made_g += $item -> gram_manufacture ?>
+                                            <?php $sum_net_g += $item -> net_money ?>
                                         @endforeach
                                         <tr>
-                                          <td class="text-center">{{$loop -> index + 1}}</td>
-                                          <td class="text-center">{{$group}}</td>
+                                            <td class="text-center">{{$loop -> index + 1}}</td>
+                                            <td class="text-center">{{$group}}</td>
                                             <td class="text-center"> {{$count}} </td>
                                             <td class="text-center"> {{$sum_weight_group}} </td>
                                             <td class="text-center"> {{$sum_total_group}}</td>

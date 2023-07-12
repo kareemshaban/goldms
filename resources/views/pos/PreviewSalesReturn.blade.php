@@ -85,10 +85,10 @@
                                     </div>
                                     <div class="col-4">
                                         <div class="form-group">
-                                            <label>{{ __('main.bill_no') }} <span
+                                            <label>{{ __('main.ref_number') }} <span
                                                     style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
                                             <input type="text" id="bill_number" name="bill_number"
-                                                   class="form-control" placeholder="bill_no" readonly value="{{$bill -> bill_number}}"
+                                                   class="form-control" placeholder="bill_no" readonly value="{{$bill -> ref_number}}"
                                             />
                                         </div>
                                     </div>

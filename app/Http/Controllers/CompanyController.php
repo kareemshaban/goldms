@@ -6,6 +6,7 @@ use App\Models\AccountsTree;
 use App\Models\Company;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
+use App\Models\CompanyInfo;
 use App\Models\CompanyMovement;
 use App\Models\CustomerGroup;
 use App\Models\Pricing;
@@ -45,6 +46,7 @@ class CompanyController extends Controller
     }
     public function clientAccount($id){
         $client = Company::find($id);
+        $company = CompanyInfo::all() -> first();
         $type = $client -> group_id ;
         $movements = CompanyMovement::where('company_id' , '=' , $id) -> get();
         $slag =  $type == 3 ? 5 : 4;
@@ -65,7 +67,9 @@ class CompanyController extends Controller
             array_push($routes , $role -> route);
         }
 
-        return view('Company.accountMovement' , compact('type' , 'movements' , 'slag' , 'subSlag' , 'routes'));
+        $period = ' ';
+        $period_ar = '';
+        return view('Company.accountMovement' , compact('type' , 'movements' , 'slag' , 'subSlag' , 'routes' , 'company' , 'period' , 'period_ar'));
     }
 
     /**

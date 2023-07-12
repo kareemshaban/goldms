@@ -23,7 +23,7 @@
     <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
 
     <style>
-  
+
     </style>
 
 </head>
@@ -61,9 +61,9 @@
                     <div class="card shadow mb-4 ">
                         <div class="card-header py-3 " style="border:solid 1px gray">
                             <header>
-                                <div class="container">
+
                                     <div class="row" style="direction: ltr;">
-                                        <div class="col-sm c">
+                                        <div class="col-4 c">
                                             <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
 
                                         <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
@@ -72,10 +72,10 @@
 
                                    </span>
                                         </div>
-                                        <div class="col-sm c">
+                                        <div class="col-4 c">
                                             <label style="text-align: center; font-weight: bold"> تقرير قائمة الأصناف</label>
                                         </div>
-                                        <div class="col-sm c">
+                                        <div class="col-4 c">
                                        <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
 
                                         <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
@@ -84,7 +84,7 @@
                                        </span>
                                         </div>
                                     </div>
-                                </div>
+
 
                             </header>
 

@@ -40,7 +40,7 @@
              </span>
             </div>
             <div class="col-4 c">
-                <label style="text-align: center; font-weight: bold"> مستند قبض نقدية  </label>
+                <label style="text-align: center; font-weight: bold"> مستند صرف نقدية  </label>
             </div>
             <div class="col-4 c">
                 <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
@@ -143,7 +143,7 @@
                 </div>
 
                 <div class="col-8">
-                    <label>..............................................................................</label>
+                    <label>{{$bill -> notes}}</label>
                 </div>
 
 

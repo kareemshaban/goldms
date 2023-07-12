@@ -41,8 +41,8 @@
                     <th class="text-center" style="padding: 5px">{{\Carbon\Carbon::parse($bill -> date) -> format('d- m -Y') }}</th>
                 </tr>
                 <tr>
-                    <th class="text-center" style="padding: 5px">رقم الفاتورة</th>
-                    <th class="text-center"  style="padding: 5px">{{$bill -> bill_number}}</th>
+                    <th class="text-center" style="padding: 5px">الرقم المرجعي</th>
+                    <th class="text-center"  style="padding: 5px">{{$bill -> ref_number}}</th>
 
 
                 </tr>

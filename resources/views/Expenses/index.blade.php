@@ -306,7 +306,7 @@
 
             $.ajax({
                 type: 'get',
-                url: '/get_Expense_no',
+                url: 'get_Expense_no',
                 dataType: 'json',
 
                 success: function(result) {
@@ -339,7 +339,7 @@
             event.preventDefault();
             $.ajax({
                 type:'get',
-                url:'/getExpense' + '/' + id,
+                url:'getExpense' + '/' + id,
                 dataType: 'json',
 
                 success:function(response){

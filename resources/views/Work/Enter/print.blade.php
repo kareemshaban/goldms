@@ -21,7 +21,7 @@
 <header>
     <div class="container">
         <div class="row">
-            <div class="col-sm c">
+            <div class="col-4 c">
                 <span style="text-align: left;">Jawaher Lulia Industry Company
 
             <br> C.R :   1010157466
@@ -30,11 +30,11 @@
 
        </span>
             </div>
-            <div class="col-sm c">
+            <div class="col-4 c">
                 <img src="../../assets/img/logo_lol.png" class="logo">
                 <label style="text-align: center; font-weight: bold">فاتورة ضريبية</label>
             </div>
-            <div class="col-sm c">
+            <div class="col-4 c">
            <span style="text-align: right;">شركة جواهر لوليا
            للذهب والمجوهرات
 

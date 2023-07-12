@@ -1,3 +1,13 @@
+<style>
+    #example-two-button {
+        width: 100%;
+        text-align: right;
+        background: transparent;
+        color: black;
+    }
+</style>
+
+
 <div class="modal fade" id="compineModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -17,9 +27,11 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <label>{{ __('main.compine_item') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span></label>
+                                <label>{{ __('main.compine_item') }} <span
+                                        style="color:red; font-size:20px; font-weight:bold;">*</span></label>
                                 <input type="text" id="parent_name" name="parent_name" required
-                                       class="form-control"  readonly value="{{Config::get('app.locale') == 'ar' ?  $item -> name_ar : $item -> name_en}}"/>
+                                       class="form-control" readonly
+                                       value="{{Config::get('app.locale') == 'ar' ?  $item -> name_ar : $item -> name_en}}"/>
                                 <input type="hidden" id="parent_id" name="parent_id" value="{{  $item -> id }}">
 
                             </div>
@@ -29,7 +41,8 @@
                                 <label>{{ __('main.karat') }} <span
                                         style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
                                 <input type="text" id="karat" name="karat"
-                                       class="form-control"  readonly value="{{Config::get('app.locale') == 'ar' ? $item -> karat -> name_ar : $item -> karat -> name_en}}"/>
+                                       class="form-control" readonly
+                                       value="{{Config::get('app.locale') == 'ar' ? $item -> karat -> name_ar : $item -> karat -> name_en}}"/>
                             </div>
                         </div>
                     </div>
@@ -38,12 +51,29 @@
                             <div class="form-group">
                                 <label>{{ __('main.items') }} <span
                                         style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
-                                <select class="form-control" id="item_id" name="item_id" required>
-                                    @foreach($items as $item)
-                                        <option
-                                            value="{{$item -> id}}">{{Config::get('app.locale') == 'ar' ? $item -> name_ar : $item -> name_en}}</option>
-                                    @endforeach
-                                </select>
+                                <div class="dropdown hierarchy-select" id="example">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle"
+                                            id="example-two-button" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false"></button>
+                                    <div class="dropdown-menu" aria-labelledby="example-two-button" style="width: 100%;
+text-align: center;">
+                                        <div class="hs-searchbox">
+                                            <input type="text" class="form-control" autocomplete="off">
+                                        </div>
+                                        <div class="hs-menu-inner">
+                                            @foreach($items as $item)
+                                                <a class="dropdown-item" data-value="{{$loop -> index + 1}}" href="#"
+                                                   onclick="selectItem({{$item -> id}})">
+                                                    {{Config::get('app.locale') == 'ar' ? $item -> name_ar . '--' . $item -> code : $item -> name_en  . '--' . $item -> code}}</a>
+                                            @endforeach
+                                            <input hidden required id="item_id" name="item_id" value="0">
+
+                                        </div>
+                                    </div>
+                                    <input class="d-none" name="example_two" readonly="readonly" aria-hidden="true"
+                                           type="text"/>
+                                </div>
+
                             </div>
                         </div>
 
@@ -104,3 +134,27 @@
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
+
+<!-- Bootstrap CSS -->
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+<script src=" {{asset('assets/js/hierarchy-select.min.js')}}"></script>
+<script>
+    $(document).ready(function () {
+        $('#example').hierarchySelect({
+            hierarchy: false,
+            width: 'auto'
+        });
+    });
+
+    function selectItem(id) {
+        document.getElementById('item_id').value = id;
+        console.log(document.getElementById('item_id').value);
+    }
+</script>

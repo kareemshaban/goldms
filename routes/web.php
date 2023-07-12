@@ -176,6 +176,10 @@ Route::group(
     Route::post('/movement_report', [App\Http\Controllers\ReportController::class, 'movement_report_search'])->name('movement_report_search');
 
 
+    Route::get('/account_movement_report', [App\Http\Controllers\ReportController::class, 'account_movement_report'])->name('account_movement_report');
+    Route::post('/account_movement_report', [App\Http\Controllers\ReportController::class, 'account_movement_report_search'])->name('account_movement_report_search');
+
+
 
 
 
@@ -214,6 +218,8 @@ Route::group(
 
 
     Route::get('/accounts', [\App\Http\Controllers\AccountsTreeController::class, 'index'])->name('accounts_list');
+    Route::get('/accounts_tree', [\App\Http\Controllers\AccountsTreeController::class, 'index2'])->name('accounts_tree');
+
     Route::get('/accounts/create', [\App\Http\Controllers\AccountsTreeController::class, 'create'])->name('create_account');
     Route::post('/accounts/create', [\App\Http\Controllers\AccountsTreeController::class, 'store'])->name('store_account');
     Route::get('/accounts/get_level/{parent}', [\App\Http\Controllers\AccountsTreeController::class, 'getLevel'])->name('get_account_level');
@@ -227,13 +233,18 @@ Route::group(
     Route::get('/account_settings/edit/{id}', [\App\Http\Controllers\AccountSettingController::class, 'edit'])->name('edit_account_settings');
     Route::post('/account_settings/edit/{id}', [\App\Http\Controllers\AccountSettingController::class, 'update'])->name('update_account_settings');
     Route::get('/account_settings/delete/{id}', [\App\Http\Controllers\AccountSettingController::class, 'destroy'])->name('delete_account_settings');
-    Route::get('/accounts/journals', [\App\Http\Controllers\AccountsTreeController::class, 'journals'])->name('journals');
+    Route::get('/accounts/journals/{type}', [\App\Http\Controllers\AccountsTreeController::class, 'journals'])->name('journals');
     Route::get('/accounts/journals/preview/{id}', [\App\Http\Controllers\AccountsTreeController::class, 'previewJournal'])->name('preview_journal');
+    Route::post('/accounts/journals_search', [\App\Http\Controllers\AccountsTreeController::class, 'journals_search'])->name('journals_search');
+
+
 
     Route::get('/accounts/manual', [\App\Http\Controllers\JournalController::class, 'create'])->name('manual_journal');
     Route::post('/accounts/manual', [\App\Http\Controllers\JournalController::class, 'store'])->name('store_manual');
     Route::get('/getAccounts/{code}', [App\Http\Controllers\AccountsTreeController::class, 'getAccount'])->name('getAccounts');
     Route::get('/journals/delete/{id}', [\App\Http\Controllers\JournalController::class, 'delete'])->name('delete_journal');
+    Route::get('manual_number', [\App\Http\Controllers\JournalController::class, 'manual_number'])->name('manual_number');
+
 
 
     Route::get('/incoming_list', [\App\Http\Controllers\JournalController::class, 'incoming_list'])->name('incoming_list');

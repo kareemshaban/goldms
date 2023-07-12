@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,6 +16,7 @@
 
     <!-- Custom fonts for this template-->
     <link href="{{asset('assets/vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
+
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
@@ -21,7 +24,7 @@
     <link href="{{asset('assets/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="{{asset('assets/css/sb-admin-2.css')}}" rel="stylesheet">
-    <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
+
 
 </head>
 
@@ -31,7 +34,7 @@
 <div id="wrapper">
 
     <!-- Sidebar -->
-    @include('layouts.side' , ['slag' => 14 , 'subSlag' => 149])
+    @include('layouts.side' , ['slag' => 16 , 'subSlag' => 166])
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -48,121 +51,42 @@
             <div class="container-fluid">
                 @include('flash-message')
                 <div class="d-sm-flex align-items-center justify-content-between mb-4" style="padding: 8px">
-                    <h1 class="h3 mb-0 text-primary-800 no-print">{{__('main.accounting')}} / {{__('main.balance_sheet')}}</h1>
-                    <button type="button" class="btn btn-info no-print" id="btnPrint">Print</button>
-
+                    <h1 class="h3 mb-0 text-primary-800">{{__('main.accounting')}} / {{__('main.accounts')}}</h1>
+                    <a href="{{route('create_account')}}"
+                       class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
+                       style="border-radius: 10px; margin:5px;: 5px;"><i style="margin: 5px ; padding: 5px;"
+                                                                         class="fas fa-plus-circle fa-sm text-white-50"></i> {{__('main.add_new')}}
+                    </a>
                 </div>
 
                 <div class="card-body px-0 pt-0 pb-2">
 
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3 " style="border:solid 1px gray">
-                            <header>
-                                    <div class="row" style="direction: ltr;">
-                                        <div class="col-4 c">
-                                            <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
-
-                                        <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
-                                       <br>  Vat No :   {{$company ? $company -> taxNumber : ''}}
-                                      <br>  Tel :   {{ $company ? $company -> phone : ''}}
-
-                                   </span>
-                                        </div>
-                                        <div class="col-4 c">
-                                            <label style="text-align: center; font-weight: bold"> تقرير الميزانية</label>
-                                        </div>
-                                        <div class="col-4 c">
-                                       <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
-
-                                        <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
-                                       <br>  ر.ض :  {{$company ? $company -> registrationNumber : ''}}
-                                      <br>  تليفون :   {{$company ? $company -> phone : ''}}
-                                       </span>
-                                        </div>
-                                    </div>
-
-                            </header>
-
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">{{__('main.accounts')}}</h6>
                         </div>
-
-
-
                         <div class="card-body">
-                            <h4 class="text-center">  {{Config::get('app.locale') == 'ar' ? $period_ar : $period}} </h4>
-
                             <div class="table-responsive">
+                                <ul id="myUL">
+                                    @foreach($accounts as $account)
+                                        <li>
+                                            <span class="caret">{{$account -> name . ' --- ' . $account -> code}}</span>
+                                                <ul class="nested">
+                                                    @foreach($account -> childs as $child)
+                                                        <li>{{$child -> name . ' --- ' . $child -> code}}</li>
+                                                    @endforeach
 
-                                <table  class="table table-bordered"  width="100%" cellspacing="0">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.name')}}</th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.Credit')}}</th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.Debit')}}</th>
-                                        <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.balance')}}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-
-                                    @foreach($accounts1 as $index=>$unit)
-                                        <tr>
-                                            <td class="text-center" style="text-align: right !important;">   {{ '- ' . $unit->name}}</td>
-
-                                        </tr>
-                                        @foreach($unit -> childs as $child)
-                                            @if(count($child -> childs) == 0)
-                                                <tr>
-                                                    <td class="text-center">{{$child->name}}</td>
-                                                    <td class="text-center">{{$child->credit}}</td>
-                                                    <td class="text-center">{{$child->debit}}</td>
-
-                                                    <td class="text-center">{{$child->credit - $child->debit}}</td>
-                                                </tr>
-                                            @else
-                                                <tr>
-                                                    <td class="text-center" colspan="4" style="text-align: right !important;">{{ '-- ' . $child->name}}</td>
-
-                                                </tr>
-                                            @endif
-                                            @foreach($child ->childs as $subChild)
-                                                @if(count($subChild -> childs) == 0)
-                                                    <tr>
-                                                        <td class="text-center">{{$subChild->name}}</td>
-                                                        <td class="text-center">{{$subChild->credit}}</td>
-                                                        <td class="text-center">{{$subChild->debit}}</td>
-
-                                                        <td class="text-center">{{$subChild->credit - $subChild->debit}}</td>
-                                                    </tr>
-                                                @else
-                                                    <tr>
-                                                        <td class="text-center" colspan="4" style="text-align: right !important;">{{ '--- ' . $subChild->name}}</td>
-
-                                                    </tr>
-                                                @endif
-                                                @foreach($subChild ->childs as $subSubChild)
-
-                                                    <tr>
-                                                        <td class="text-center">{{$subSubChild->name}}</td>
-                                                        <td class="text-center">{{$subSubChild->credit}}</td>
-                                                        <td class="text-center">{{$subSubChild->debit}}</td>
-
-                                                        <td class="text-center">{{$subSubChild->credit - $subSubChild->debit}}</td>
-                                                    </tr>
+                                                </ul>
+                                        </li>
 
 
-                                                @endforeach
-
-
-                                            @endforeach
-
-                                        @endforeach
                                     @endforeach
-                                    </tbody>
 
-                                </table>
 
+
+                                </ul>
                             </div>
                         </div>
-
                     </div>
 
                 </div>
@@ -243,11 +167,17 @@
 <script type="text/javascript">
     let id = 0;
     $(document).ready(function () {
+        var toggler = document.getElementsByClassName("caret");
+        var i;
 
-        $(document).on('click', '#btnPrint', function (event) {
-            printPage();
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function() {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+            });
+        }
 
-        });
+
         id = 0;
         $(document).on('click', '#createButton', function (event) {
             console.log('clicked');
@@ -304,7 +234,6 @@
 
 
 
-
         $(document).on('click', '.deleteBtn', function (event) {
             console.log('clicked');
             id = event.currentTarget.value;
@@ -344,7 +273,7 @@
     });
 
     function confirmDelete() {
-        let url = "{{ route('workEntryDelete', ':id') }}";
+        let url = "{{ route('delete_account', ':id') }}";
         url = url.replace(':id', id);
         document.location.href = url;
     }
@@ -395,26 +324,7 @@
             }
         });
     }
-    function printPage(){
-        var css = '@page { size: landscape; }',
-            head = document.head || document.getElementsByTagName('head')[0],
-            style = document.createElement('style');
-
-        style.type = 'text/css';
-        style.media = 'print';
-
-        if (style.styleSheet){
-            style.styleSheet.cssText = css;
-        } else {
-            style.appendChild(document.createTextNode(css));
-        }
-
-        head.appendChild(style);
-
-        window.print();
-    }
 </script>
-
 
 
 <script src="{{asset('assets/vendor/jquery/jquery.min.js')}}"></script>
@@ -436,4 +346,3 @@
 </body>
 
 </html>
-

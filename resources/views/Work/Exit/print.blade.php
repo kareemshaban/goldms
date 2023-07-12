@@ -22,7 +22,7 @@
 <header>
     <div class="container">
         <div class="row">
-            <div class="col-sm c">
+            <div class="col-4 c">
                 <span style="text-align: left;">{{$company ? $company -> name_en : ''}}
 
             <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
@@ -31,10 +31,10 @@
 
        </span>
             </div>
-            <div class="col-sm c">
+            <div class="col-4 c">
                 <label style="text-align: center; font-weight: bold">فاتورة ضريبية</label>
             </div>
-            <div class="col-sm c">
+            <div class="col-4 c">
            <span style="text-align: right;">{{$company ? $company -> name_en : ''}}
 
             <br>  س.ت : {{$company ? $company -> taxNumber : ''}}

@@ -1,8 +1,18 @@
 @media print{
     @page {
         size: A4 landscape;
-
+        margin: 0 !important;
     }
+
+    table {
+        page-break-inside: avoid;
+    }
+    thead {
+        display: table-header-group;
+    }
+
+
+
 
 }
 

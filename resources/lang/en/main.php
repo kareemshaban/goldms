@@ -338,5 +338,9 @@ return [
     'purchase_total_report' => 'Total Purchase Report',
     'purchase_sales_total_report' => 'Total Daily Sales & Purchase Report',
     'movement_report' => 'Movement Report' ,
+    'ref_number' => 'Ref Number',
+    'manual_journals' => 'Manual Journals',
+    'account_movement_report' => 'Account Movement Report',
+    'accounts_list' => 'Accounts List',
 
 ];

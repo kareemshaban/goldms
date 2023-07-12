@@ -55,6 +55,21 @@
                         @csrf
 
                         <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>رقم القيد <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                    <input id="bill_number" readonly class="form-control" type="text">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label>{{ __('main.date') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                <input type="datetime-local"  id="date" name="date"
+                                       class="form-control"
+                                />
+                            </div>
+
+                        </div>
+                        <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
                                     <label>{{ __('main.notes') }} <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
@@ -165,14 +180,40 @@ margin: 30px auto;" value="{{__('main.save_btn')}}"></input>
 
 
 <script type="text/javascript">
+    function getDocNo(){
+
+        let bill_number = document.getElementById('bill_number');
+        $.ajax({
+            type:'get',
+            url:'{{route('manual_number')}}',
+            dataType: 'json',
+
+            success:function(response){
+                console.log(response);
+
+                if(response){
+                    bill_number.value = response ;
+                } else {
+                    bill_number.value = '' ;
+                }
+            }
+        });
+    }
+
 
     var suggestionItems = {};
     var sItems = {};
     var count = 1;
 
     $(document).ready(function() {
+        var now = new Date();
+        local = document.getElementById('local').value ;
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        now.setMilliseconds(null);
+        now.setSeconds(null);
 
-
+        document.getElementById('date').value = now.toISOString().slice(0, -1);
+        getDocNo();
         $('input[name=add_item]').change(function() {
             console.log($('#add_item').val());
         });

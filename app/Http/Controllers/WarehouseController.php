@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\CompanyInfo;
 use App\Models\CompanyMovement;
 use App\Models\Item;
 use App\Models\ItemMaterials;
@@ -33,6 +34,7 @@ class WarehouseController extends Controller
             'user_created' => Auth::user() -> id,
         ]);
     }
+
 
     public function deleteQnt($bill_id){
         $items = Warehouse::where('bill_id' , '=' , $bill_id) -> get();
@@ -116,7 +118,19 @@ class WarehouseController extends Controller
         foreach ($roless as $role){
             array_push($routes , $role -> route);
         }
-        return view('Item.gold_stock' , compact('work' , 'old' , 'karats' , 'slag' , 'subSlag' , 'routes')) ;
+        $company = CompanyInfo::all() -> first();
+
+        $period = 'Period : ';
+        $period_ar = 'الفترة  :';
+
+            $period .= 'Starting Date';
+            $period_ar .= 'من البداية' ;
+
+            $period .= ' -- '  . 'Today' ;
+            $period_ar .= ' -- '  . 'حتي اليوم' ;
+
+
+        return view('Item.gold_stock' , compact('work' , 'old' , 'karats' , 'slag' , 'subSlag' , 'routes' , 'company' , 'period_ar' , 'period')) ;
     }
 
     public function makeItemUnAvailable($id){

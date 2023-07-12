@@ -29,7 +29,7 @@
 <div id="wrapper">
 
     <!-- Sidebar -->
-    @include('layouts.side' , ['slag' => 14 , 'subSlag' => 150])
+    @include('layouts.side' , ['slag' => 14 , 'subSlag' => 1446])
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -46,7 +46,7 @@
             <div class="container-fluid">
                 @include('flash-message')
                 <div class="d-sm-flex align-items-center justify-content-between mb-4" style="padding: 8px">
-                    <h1 class="h3 mb-0 text-primary-800">{{__('main.accounting')}} / {{__('main.balance_report')}}</h1>
+                    <h1 class="h3 mb-0 text-primary-800">{{__('main.accounting')}} / {{__('main.account_movement_report')}}</h1>
 
                 </div>
 
@@ -54,12 +54,25 @@
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">{{__('main.balance_report')}}</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">{{__('main.account_movement_report')}}</h6>
                         </div>
                         <div class="card-body">
-                            <form   method="POST" action="{{ route('search_account_balance') }}"
+                            <form   method="POST" action="{{ route('account_movement_report_search') }}"
                                     enctype="multipart/form-data" >
                                 @csrf
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>  الحساب <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                            <select id="account_id" name="account_id"  class="form-control">
+                                             @foreach($accounts as $account)
+                                                 <option value="{{$account -> id}}">{{$account -> name  . '--' . $account -> code }}</option>
+                                             @endforeach
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="form-group">
@@ -76,6 +89,7 @@
                                         </div>
                                     </div>
                                 </div>
+
 
 
                                 <div class="row">

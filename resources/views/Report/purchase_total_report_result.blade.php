@@ -57,9 +57,8 @@
                     <div class="card shadow mb-4 ">
                         <div class="card-header py-3 " style="border:solid 1px gray">
                             <header>
-                                <div class="container">
                                     <div class="row" style="direction: ltr;">
-                                        <div class="col-sm c">
+                                        <div class="col-4 c">
                                             <span style="text-align: left; font-size:15px;">{{$company ? $company -> name_en : ''}}
 
                                         <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
@@ -68,10 +67,10 @@
 
                                    </span>
                                         </div>
-                                        <div class="col-sm c">
+                                        <div class="col-4 c">
                                             <label style="text-align: center; font-weight: bold"> تقرير  مشتريات إجمالي</label>
                                         </div>
-                                        <div class="col-sm c">
+                                        <div class="col-4 c">
                                        <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
 
                                         <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
@@ -80,7 +79,6 @@
                                        </span>
                                         </div>
                                     </div>
-                                </div>
 
                             </header>
 
@@ -97,6 +95,7 @@
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.document_type')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.date')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.bill_no')}}</th>
+                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.supplier')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.total_weight21')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.total_money')}}</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.discount')}}</th>
@@ -117,7 +116,14 @@
                                             <td class="text-center">{{$loop -> index + 1}}</td>
                                             <td class="text-center">{{$item -> type == 0 ? 'فاتورة مشتريات ذهب كسر' : 'فاتورة مشتريات ذهب مشغول'}}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($item -> date) -> format('d-m-Y')  }}</td>
-                                            <td class="text-center">{{$item -> bill_number}}</td>
+                                            <td class="text-center">
+                                                @if($item -> type == 1 )
+                                                    <a href="{{route('workEntryPreview' , $item -> id)}}" target="_blank">{{$item -> bill_number}}</a>
+                                                @else
+                                                    <a href="{{route('oldEntryPreview' , $item -> id)}}" target="_blank">{{$item -> bill_number}}</a>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">{{$item -> supplier}}</td>
                                             <td class="text-center">{{$item -> total21_gold}}</td>
                                             <td class="text-center">{{$item -> total_money}}</td>
                                             <td class="text-center">{{$item -> discount}}</td>
@@ -134,7 +140,7 @@
                                     @endforeach
 
                                     <tr>
-                                        <td class="text-center" colspan="4"> الإجمالي</td>
+                                        <td class="text-center" colspan="5"> الإجمالي</td>
                                         <td class="text-center">{{$sum_weight}}</td>
                                         <td class="text-center">{{$sum_total}}</td>
                                         <td class="text-center">{{$sum_discount}}</td>

@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <title>Invoice</title>
     <link rel="stylesheet" href="{{asset('assets/css/bootstrap.min.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/css/print.css')}}">
     <script src="{{asset('assets/js/print.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="{{asset('assets/css/printA4Landscape.css')}}" rel="stylesheet">
     <style>
         .c{
 
@@ -19,11 +19,11 @@
     </style>
 </head>
 <body>
-    <page size="A4">
+
         <header>
             <div class="container">
                 <div class="row">
-                    <div class="col-sm c">
+                    <div class="col-4 ">
                         <span style="text-align: left;">{{$company ? $company -> name_en : ''}}
 
                     <br> C.R :   {{$company ? $company -> registrationNumber : ''}}
@@ -32,10 +32,10 @@
 
                </span>
                     </div>
-                    <div class="col-sm c">
+                    <div class="col-4 ">
                         <label style="text-align: center; font-weight: bold"> تقرير قائمة الأصناف</label>
                     </div>
-                    <div class="col-sm c">
+                    <div class="col-4 ">
                    <span style="text-align: right;">{{$company ? $company -> name_en : ''}}
 
                     <br>  س.ت : {{$company ? $company -> taxNumber : ''}}
@@ -128,7 +128,7 @@
             }
 
         </script>
-    </page>
+
 
 
 </body>

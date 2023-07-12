@@ -31,7 +31,7 @@
 <div id="wrapper">
 
     <!-- Sidebar -->
-    @include('layouts.side' , ['slag' => 14 , 'subSlag' => 150])
+    @include('layouts.side' , ['slag' => 14 , 'subSlag' => 1446])
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -48,7 +48,7 @@
             <div class="container-fluid">
                 @include('flash-message')
                 <div class="d-sm-flex align-items-center justify-content-between mb-4" style="padding: 8px">
-                    <h1 class="h3 mb-0 text-primary-800 no-print">{{__('main.accounting')}} / {{__('main.balance_report')}}</h1>
+                    <h1 class="h3 mb-0 text-primary-800 no-print">{{__('main.accounting')}} / {{__('main.account_movement_report')}}</h1>
                     <button type="button" class="btn btn-info no-print" id="btnPrint">Print</button>
                 </div>
 
@@ -68,7 +68,7 @@
                                    </span>
                                         </div>
                                         <div class="col-4 c">
-                                            <label style="text-align: center; font-weight: bold"> تقرير ميزان المراجعة</label>
+                                            <label style="text-align: center; font-weight: bold"> تقرير حركة حساب</label>
                                         </div>
                                         <div class="col-4 c">
                                        <span style="text-align: right;">{{$company ? $company -> name_ar : ''}}
@@ -149,7 +149,7 @@
                                     @endforeach
 
                                     <tr style="background: #c3e6cb">
-                                    <td class="text-center"> اجمالي الميزان  </td>
+                                    <td class="text-center"> اجمالي الحساب  </td>
                                         <td class="text-center">{{$before_credit}}  </td>
                                         <td class="text-center">{{$before_debit}}  </td>
                                         <td class="text-center">{{$credit}}  </td>

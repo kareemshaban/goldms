@@ -229,7 +229,7 @@ class JournalController extends Controller
         $siteController = new SystemController();
 
         $header =[
-            'date' => date('Y-m-d').'T'.date('H:i'),
+            'date' => Carbon::parse($request -> date),
             'basedon_no' => '',
             'basedon_id' => 0,
             'baseon_text' => 'سند قيد يدوي',
@@ -256,7 +256,7 @@ class JournalController extends Controller
         }
 
         $siteController->insertJournal($header,$details,1);
-        return redirect()->route('journals');
+        return redirect()->route('journals' , '0');
     }
 
     public function delete($id){
@@ -273,7 +273,19 @@ class JournalController extends Controller
         $siteController = new SystemController();
         $siteController->deleteJournal($header);
 
-        return redirect()->route('journals');
+        return redirect()->route('journals' , '0');
+    }
+
+    public function manual_number(){
+        $bills = Journal::orderBy('id', 'ASC') ->get();
+        if(count($bills) > 0){
+            $id = $bills[count($bills) -1] -> id ;
+        } else
+            $id = 0 ;
+
+            $no = json_encode (str_pad($id + 1, 6 , '0' , STR_PAD_LEFT)) ;
+        echo $no ;
+        exit;
     }
 
 }

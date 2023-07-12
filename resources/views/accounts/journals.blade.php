@@ -31,7 +31,12 @@
 <div id="wrapper">
 
     <!-- Sidebar -->
+    @if($type == 1)
     @include('layouts.side' , ['slag' => 16 , 'subSlag' => 163])
+    @else
+        @include('layouts.side' , ['slag' => 16 , 'subSlag' => 165])
+    @endif
+
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -48,7 +53,13 @@
             <div class="container-fluid">
                 @include('flash-message')
                 <div class="d-sm-flex align-items-center justify-content-between mb-4" style="padding: 8px">
-                    <h1 class="h3 mb-0 text-primary-800">{{__('main.accounting')}} / {{__('main.journals')}}</h1>
+                    @if($type == 1)
+                        <h1 class="h3 mb-0 text-primary-800">{{__('main.accounting')}} / {{__('main.journals')}}</h1>
+                    @else
+                        <h1 class="h3 mb-0 text-primary-800">{{__('main.accounting')}} / {{__('main.manual_journals')}}</h1>
+
+                    @endif
+
                     <a href="{{route('manual_journal')}}"
                        class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
                        style="border-radius: 10px; margin:5px;: 5px;"><i style="margin: 5px ; padding: 5px;"
@@ -60,14 +71,52 @@
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">{{__('main.journals')}}</h6>
+                            <form   method="POST" action="{{ route('journals_search') }}"
+                                    enctype="multipart/form-data" >
+                                @csrf
+                                <input type="hidden" id="type" name="type" value="{{$type}}" >
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label> تاريخ البداية <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                            <input type="checkbox" id="isStartDate" name="isStartDate">
+                                            <input type="date" id="StartDate" name="StartDate"  class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label> تاريخ النهاية <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                            <input type="checkbox" id="isEndDate" name="isEndDate">
+                                            <input type="date" id="EndDate" name="EndDate"  class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label> رقم القيد <span style="color:red; font-size:20px; font-weight:bold;">*</span> </label>
+                                            <input type="checkbox" id="isCode" name="isCode">
+                                            <input type="text" id="code" name="code"  class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6" style="display: block; margin: 20px auto; text-align: center;">
+                                        <button type="submit" class="btn btn-labeled btn-primary"  >
+                                            {{__('main.search_btn')}}</button>
+                                    </div>
+                                </div>
+
+
+                            </form>
+
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                     <tr>
-                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">#</th>
+                                        <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">رقم القيد</th>
                                         <th class="text-uppercase text-secondary text-md-center font-weight-bolder opacity-7 ps-2">{{__('main.date')}}</th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.basedon_text')}}</th>
                                         <th class="text-center text-uppercase text-secondary text-md-center font-weight-bolder opacity-7">{{__('main.basedon_no')}}</th>
@@ -80,27 +129,61 @@
                                     </thead>
                                     <tbody>
                                     @foreach($journals as $unit)
-                                        <tr>
-                                            <td class="text-center">{{$unit->id}}</td>
-                                            <td class="text-center">{{$unit->date}}</td>
-                                            <td class="text-center">{{$unit->baseon_text}}</td>
-                                            <td class="text-center">{{$unit->basedon_no}}</td>
-                                            <td class="text-center">{{$unit->credit_total}}</td>
-                                            <td class="text-center">{{$unit->debit_total}}</td>
-                                            <td class="text-center">{{$unit->credit_totalg}}</td>
-                                            <td class="text-center">{{$unit->debit_totalg}}</td>
-                                            <td class="text-center">
+                                        @if($type == 1)
+                                            @if($unit->basedon_no != '')
+                                            <tr>
 
-                                                <button type="button" class="btn btn-labeled btn-success"  onclick="showPayments({{$unit->id}})">
-                                                    <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-eye"></i></span>{{__('main.preview')}}</button>
+                                                <td class="text-center">{{ str_pad( $unit->id , 6 , '0' , STR_PAD_LEFT)}}</td>
+                                                <td class="text-center">{{$unit->date}}</td>
+                                                <td class="text-center">{{$unit->baseon_text}}</td>
+                                                <td class="text-center">{{$unit->basedon_no}}</td>
+                                                <td class="text-center">{{$unit->credit_total}}</td>
+                                                <td class="text-center">{{$unit->debit_total}}</td>
+                                                <td class="text-center">{{$unit->credit_totalg}}</td>
+                                                <td class="text-center">{{$unit->debit_totalg}}</td>
+                                                <td class="text-center">
 
-                                                @if($unit->basedon_no == '')
-                                                    <button type="button" class="btn btn-labeled btn-danger deleteBtn "  id="{{$unit->id}}">
-                                                        <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-trash"></i></span>{{__('main.delete')}}</button>
-                                                @endif
+                                                    <button type="button" class="btn btn-labeled btn-success"  onclick="showPayments({{$unit->id}})">
+                                                        <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-eye"></i></span>{{__('main.preview')}}</button>
 
-                                            </td>
-                                        </tr>
+                                                    @if($unit->basedon_no == '')
+                                                        <button type="button" class="btn btn-labeled btn-danger deleteBtn "  id="{{$unit->id}}">
+                                                            <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-trash"></i></span>{{__('main.delete')}}</button>
+                                                    @endif
+
+                                                </td>
+                                            </tr>
+                                            @endif
+
+                                        @else
+                                            @if($unit->basedon_no == '')
+                                            <tr>
+
+                                                <td class="text-center">{{ str_pad( $unit->id , 6 , '0' , STR_PAD_LEFT)}}</td>
+                                                <td class="text-center">{{$unit->date}}</td>
+                                                <td class="text-center">{{$unit->baseon_text}}</td>
+                                                <td class="text-center">{{$unit->basedon_no}}</td>
+                                                <td class="text-center">{{$unit->credit_total}}</td>
+                                                <td class="text-center">{{$unit->debit_total}}</td>
+                                                <td class="text-center">{{$unit->credit_totalg}}</td>
+                                                <td class="text-center">{{$unit->debit_totalg}}</td>
+                                                <td class="text-center">
+
+                                                    <button type="button" class="btn btn-labeled btn-success"  onclick="showPayments({{$unit->id}})">
+                                                        <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-eye"></i></span>{{__('main.preview')}}</button>
+
+                                                    @if($unit->basedon_no == '')
+                                                        <button type="button" class="btn btn-labeled btn-danger deleteBtn "  id="{{$unit->id}}">
+                                                            <span class="btn-label" style="margin-right: 10px;"><i class="fa fa-trash"></i></span>{{__('main.delete')}}</button>
+                                                    @endif
+
+                                                </td>
+
+                                            </tr>
+                                            @endif
+                                        @endif
+
+
                                     @endforeach
                                     </tbody>
 
@@ -148,7 +231,7 @@
                 </button>
             </div>
             <div class="modal-body" id="smallBody">
-                <img src="../assets/img/warning.png" class="alertImage">
+                <img src="{{asset('assets/img/warning.png')}}" class="alertImage">
                 <label class="alertTitle">{{__('main.delete_alert')}}</label>
                 <br> <label class="alertSubTitle" id="modal_table_bill"></label>
                 <div class="row">
@@ -167,6 +250,52 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    $(document).ready(function (){
+        var now = new Date();
+
+        var day = ("0" + now.getDate()).slice(-2);
+        var month = ("0" + (now.getMonth() + 1)).slice(-2);
+        var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+        $('#isStartDate').prop('checked', false);
+        $('#isEndDate').prop('checked', false);
+        $('#isCode').prop('checked', false);
+
+        $('#StartDate').prop('disabled', true);
+        $('#EndDate').prop('disabled', true);
+        $('#code').prop('disabled', true);
+        $('#StartDate').val(today);
+        $('#EndDate').val(today);
+        $('#code').val('');
+
+        $('#isCode').change(function (){
+            console.log(this.checked);
+            if(this.checked){
+                $('#code').prop('disabled', false);
+            } else {
+                $('#code').prop('disabled', true);
+            }
+        });
+
+        $('#isStartDate').change(function (){
+            if(this.checked){
+                $('#StartDate').prop('disabled', false);
+            } else {
+                $('#StartDate').prop('disabled', true);
+            }
+        });
+
+        $('#isEndDate').change(function (){
+            if(this.checked){
+                $('#EndDate').prop('disabled', false);
+            } else {
+                $('#EndDate').prop('disabled', true);
+            }
+        });
+    });
+</script>
 
 <script type="text/javascript">
     let id = 0 ;

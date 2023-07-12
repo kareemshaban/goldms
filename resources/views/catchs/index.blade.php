@@ -329,16 +329,20 @@
 
 
                             $(".modal-body #id").val( 0 );
-                            $(".modal-body #type_id").val(0);
+                            $(".modal-body #from_account").val(0);
+                            $(".modal-body #to_account").val(0);
+                            $(".modal-body #client").val("");
                             $(".modal-body #amount").val(0);
                             $(".modal-body #payment_type").val(0);
 
-
                             $(".modal-body #date").attr('readOnly' , false);
                             $(".modal-body #amount").attr('readOnly' , false);
-                            $(".modal-body #type_id").attr('disabled' , false);
+                            $(".modal-body #from_account").attr('disabled' , false);
+                            $(".modal-body #to_account").attr('disabled' , false);
                             $(".modal-body #notes").attr('disabled' , false);
+                            $(".modal-body #client").attr('disabled' , false);
                             $(".modal-body #payment_type").attr('disabled' , false);
+
                             $(".modal-body #submitBtn").show();
                             $(".modal-body #printtBtn").hide();
 
@@ -367,11 +371,11 @@
             event.preventDefault();
             $.ajax({
                 type:'get',
-                url:'/getCatch' + '/' + id,
+                url:'getCatch' + '/' + id,
                 dataType: 'json',
 
                 success:function(response){
-                    console.log(response);
+                    console.log(response.payment_type);
                     if(response){
                         let href = $(this).attr('data-attr');
                         $.ajax({
